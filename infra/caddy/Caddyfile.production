@@ -1,0 +1,54 @@
+# --- portfolio main site ---
+lexmakesit.com, www.lexmakesit.com {
+    handle_path /item-manager/* {
+        reverse_proxy localhost:8010 {
+            header_up X-Forwarded-Prefix /item-manager
+        }
+    }
+
+    reverse_proxy localhost:8001
+}
+
+# --- inventory manager subdomain ---
+inventory.lexmakesit.com {
+    reverse_proxy localhost:8010
+}
+
+# --- ai receptionist backend ---
+receptionist.lexmakesit.com {
+    reverse_proxy localhost:8020
+}
+
+# --- ai receptionist admin dashboard ---
+api.lexmakesit.com {
+    reverse_proxy localhost:8020
+}
+
+# --- PRODUCTION CUSTOMER DASHBOARD (Next.js) ---
+dashboard.lexmakesit.com {
+    reverse_proxy dashboard_nextjs_prod:3000 {
+        # Preserve client info
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+    }
+    
+    # Enable compression
+    encode gzip zstd
+    
+    # Security headers
+    header {
+        # Remove server header
+        -Server
+        # Add security headers
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+    
+    # Logging
+    log {
+        output file /var/log/caddy/dashboard.log
+        format json
+    }
+}
