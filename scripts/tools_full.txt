@@ -1,0 +1,45 @@
+42 tools:
+ - browser_click - Click
+ - browser_close - Close browser
+ - browser_console_messages - Get console messages
+ - browser_drag - Drag mouse
+ - browser_evaluate - Evaluate JavaScript
+ - browser_file_upload - Upload files
+ - browser_fill_form - Fill form
+ - browser_handle_dialog - Handle a dialog
+ - browser_hover - Hover mouse
+ - browser_install - Install the browser specified in the config
+ - browser_navigate - Navigate to a URL
+ - browser_navigate_back - Go back
+ - browser_network_requests - List network requests
+ - browser_press_key - Press a key
+ - browser_resize - Resize browser window
+ - browser_run_code - Run Playwright code
+ - browser_select_option - Select option
+ - browser_snapshot - Page snapshot
+ - browser_tabs - Manage tabs
+ - browser_take_screenshot - Take a screenshot
+ - browser_type - Type text
+ - browser_wait_for - Wait for
+ - code-mode - Create a JavaScript-enabled tool that combines multiple MCP server tools.
+ - fetch - Fetches a URL from the internet and optionally extracts its contents as markdown.
+ - fetch_content - Fetch and parse content from a webpage URL.
+ - get_dependency_types - Given an array of npm package names (and optional versions), fetch whether each package ships its own TypeScript definitions or has a corresponding @types/… package, and return the raw .d.ts text.
+ - get_timed_transcript - Retrieves the transcript of a YouTube video with timestamps.
+ - get_transcript - Retrieves the transcript of a YouTube video.
+ - get_video_info - Retrieves the video information.
+ - mcp-add - Add a new MCP server to the session.
+ - mcp-config-set - Set configuration for an MCP server.
+ - mcp-create-profile - Create or update a profile with the current gateway state.
+ - mcp-exec - Execute a tool that exists in the current session.
+ - mcp-find - Find MCP servers in the current catalog by name, title, or description.
+ - mcp-remove - Remove an MCP server from the registry and reload the configuration.
+ - run_js - Install npm dependencies and run JavaScript code inside a running sandbox container.
+ - run_js_ephemeral - Run a JavaScript snippet in a temporary disposable container with optional npm dependencies, then automatically clean up.
+ - sandbox_exec - Execute one or more shell commands inside a running sandbox container.
+ - sandbox_initialize - Start a new isolated Docker container running Node.js.
+ - sandbox_stop - Terminate and remove a running sandbox container.
+ - search - Search DuckDuckGo and return formatted results.
+ - search_npm_packages - Search for npm packages by a search term and get their name, description, and a README snippet.
+Tip: For tool details, use docker mcp tools inspect <tool-name>. To test the tool, use docker mcp tools call <tool-name>
+

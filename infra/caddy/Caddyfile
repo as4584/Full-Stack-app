@@ -1,0 +1,119 @@
+{
+    # Global Options
+    email admin@lexmakesit.com
+    
+    # Rate Limiting Zone for AI Receptionist
+    # 10 requests per minute with a burst of 5
+    rate_limit ai_zone {
+        zone_size 100k
+        window 1m
+        events 10
+    }
+}
+
+# Global Security Headers Snippet
+(security_headers) {
+    header {
+        # HSTS (Strict-Transport-Security)
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        
+        # X-Frame-Options (Prevent Clickjacking)
+        X-Frame-Options "DENY"
+        
+        # X-Content-Type-Options (Prevent MIME Sniffing)
+        X-Content-Type-Options "nosniff"
+        
+        # Referrer Policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+        
+        # Content Security Policy (CSP)
+        # Adjust directives as needed for your specific apps (e.g., scripts, styles)
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+        
+        # Permissions Policy
+        Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()"
+        
+        # Remove Server Header
+        -Server
+    }
+}
+
+# Portfolio Website
+lexmakesit.com, www.lexmakesit.com {
+    import security_headers
+    
+    reverse_proxy portfolio.internal:8001 {
+        lb_policy random
+        health_uri /api/health
+        health_interval 10s
+        health_timeout 5s
+    }
+    
+    log {
+        output file /var/log/caddy/portfolio.log
+        format json
+    }
+}
+
+# AI Receptionist
+receptionist.lexmakesit.com {
+    import security_headers
+    
+    # Apply Rate Limiting
+    rate_limit {
+        zone ai_zone
+        burst 5
+    }
+    
+    reverse_proxy ai.internal:8002 {
+        lb_policy random
+        health_uri /health
+        health_interval 10s
+        health_timeout 5s
+        
+        # Increased timeouts for audio payloads
+        transport http {
+            response_header_timeout 30s
+        }
+    }
+    
+    # Limit max body size for audio uploads
+    request_body {
+        max_size 20MB
+    }
+    
+    log {
+        output file /var/log/caddy/receptionist.log
+        format json
+    }
+}
+
+# Inventory Manager
+inventory.lexmakesit.com {
+    import security_headers
+    
+    reverse_proxy inventory.internal:8010 {
+        lb_policy random
+        health_uri /health
+        health_interval 10s
+        health_timeout 5s
+    }
+    
+    log {
+        output file /var/log/caddy/inventory.log
+        format json
+    }
+}
+
+# Internal Monitoring (Protected)
+monitor.lexmakesit.com {
+    import security_headers
+    
+    # Basic Auth for Monitoring Dashboard
+    basicauth * {
+        # Replace with hashed password (caddy hash-password)
+        admin $2a$14$7...
+    }
+    
+    reverse_proxy grafana:3000
+}

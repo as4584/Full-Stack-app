@@ -1,0 +1,209 @@
+name: 🖼️ Wallpaper Asset Reliability CI
+
+# Triggers: Every PR, deploy, and nightly check
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      create_baseline:
+        description: 'Create new visual baseline'
+        required: false
+        default: false
+        type: boolean
+      phase:
+        description: 'Which phase to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - phase1
+          - phase2
+          - phase3
+          - phase4
+
+jobs:
+  wallpaper-reliability:
+    name: 🎯 Wallpaper Asset Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        phase: [phase1, phase2, phase3, phase4]
+        
+    steps:
+    - name: 📂 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        
+    - name: 📦 Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r tests/ci-wallpaper/requirements.txt
+        pip install -r tests/ci-shared/requirements.txt
+        
+    - name: 🌐 Install Playwright Browsers
+      if: matrix.phase == 'phase2' || matrix.phase == 'phase4'
+      run: |
+        playwright install chromium
+        
+    - name: 🛡️ Environment Guard
+      run: |
+        python3 tests/ci-shared/environment-guard.py development
+        
+    - name: 🎨 Shared Visual Integrity Check
+      run: |
+        python3 tests/ci-shared/visual-integrity-validator.py
+        
+    - name: 🖼️ Run Wallpaper Tests
+      id: wallpaper_tests
+      run: |
+        cd tests/ci-wallpaper
+        
+        # Determine if we should create baseline
+        BASELINE_FLAG=""
+        if [ "${{ github.event.inputs.create_baseline }}" = "true" ] && [ "${{ matrix.phase }}" = "phase4" ]; then
+          BASELINE_FLAG="--create-baseline"
+        fi
+        
+        # Run the specific phase
+        ./run_wallpaper_tests.sh ${{ matrix.phase }} --verbose $BASELINE_FLAG
+        
+    - name: 📊 Upload Screenshots
+      if: always() && (matrix.phase == 'phase2' || matrix.phase == 'phase4')
+      uses: actions/upload-artifact@v4
+      with:
+        name: wallpaper-screenshots-${{ matrix.phase }}-${{ github.run_number }}
+        path: tests/ci-wallpaper/snapshots/
+        retention-days: 30
+        
+    - name: 📋 Upload Test Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: wallpaper-reports-${{ matrix.phase }}-${{ github.run_number }}
+        path: |
+          tests/ci-wallpaper/snapshots/*.json
+          tests/ci-wallpaper/snapshots/*.log
+        retention-days: 7
+        
+  # Aggregate results and comment on PR
+  wallpaper-summary:
+    name: 📝 Wallpaper Test Summary
+    runs-on: ubuntu-latest
+    needs: wallpaper-reliability
+    if: always()
+    
+    steps:
+    - name: 📂 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download All Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: wallpaper-results/
+        
+    - name: 📊 Generate Summary Report
+      id: summary
+      run: |
+        echo "## 🖼️ Wallpaper Asset Reliability Report" > summary.md
+        echo "" >> summary.md
+        
+        # Check if all phases passed
+        if [ "${{ needs.wallpaper-reliability.result }}" = "success" ]; then
+          echo "### ✅ All Wallpaper Tests Passed" >> summary.md
+          echo "" >> summary.md
+          echo "🎉 **Safe to deploy!** All wallpaper assets are working correctly." >> summary.md
+          echo "" >> summary.md
+          echo "- ✅ Asset availability verified" >> summary.md
+          echo "- ✅ Rendering validation passed" >> summary.md
+          echo "- ✅ Cache configuration safe" >> summary.md
+          echo "- ✅ No visual regressions detected" >> summary.md
+        else
+          echo "### ❌ Wallpaper Tests Failed" >> summary.md
+          echo "" >> summary.md
+          echo "🚨 **Do not deploy!** Wallpaper assets have issues." >> summary.md
+          echo "" >> summary.md
+          echo "**Potential Impact:**" >> summary.md
+          echo "- Users may see broken backgrounds" >> summary.md
+          echo "- Brand consistency compromised" >> summary.md
+          echo "- Poor user experience" >> summary.md
+          echo "" >> summary.md
+          echo "**Action Required:**" >> summary.md
+          echo "1. Check individual phase results below" >> summary.md
+          echo "2. Fix wallpaper asset issues" >> summary.md
+          echo "3. Re-run tests" >> summary.md
+        fi
+        
+        echo "" >> summary.md
+        echo "### 🔍 Test Details" >> summary.md
+        echo "" >> summary.md
+        echo "| Phase | Test | Status |" >> summary.md
+        echo "|-------|------|--------|" >> summary.md
+        echo "| Phase 1 | Asset Availability | ${{ needs.wallpaper-reliability.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> summary.md
+        echo "| Phase 2 | Rendering Validation | ${{ needs.wallpaper-reliability.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> summary.md
+        echo "| Phase 3 | Cache Safety | ${{ needs.wallpaper-reliability.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> summary.md
+        echo "| Phase 4 | Visual Regression | ${{ needs.wallpaper-reliability.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> summary.md
+        echo "" >> summary.md
+        
+        # Add target pages
+        echo "**Target Pages Tested:**" >> summary.md
+        echo "- https://lexmakesit.com (Homepage with waterfall.gif animation)" >> summary.md
+        echo "" >> summary.md
+        
+        echo "**Commit:** \`${{ github.sha }}\`" >> summary.md
+        echo "**Workflow:** [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> summary.md
+        
+    - name: 💬 Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const summary = fs.readFileSync('summary.md', 'utf8');
+          
+          // Find existing comment
+          const comments = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const existingComment = comments.data.find(
+            comment => comment.body.includes('🖼️ Wallpaper Asset Reliability Report')
+          );
+          
+          if (existingComment) {
+            // Update existing comment
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existingComment.id,
+              body: summary
+            });
+          } else {
+            // Create new comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: summary
+            });
+          }
+          
+    - name: 🚨 Fail if Tests Failed
+      if: needs.wallpaper-reliability.result != 'success'
+      run: |
+        echo "Wallpaper asset tests failed. Check the individual phase results for details."
+        exit 1

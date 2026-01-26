@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "description": "Shared CI/CD standards and configurations for LexMakesIt platform",
+  "last_updated": "2026-01-24",
+  
+  "environments": {
+    "development": {
+      "python_version": "3.11",
+      "node_version": "18",
+      "browser": "chromium",
+      "timeout_seconds": 30
+    },
+    "staging": {
+      "python_version": "3.11",
+      "node_version": "18", 
+      "browser": "chromium",
+      "timeout_seconds": 45
+    },
+    "production": {
+      "python_version": "3.11",
+      "node_version": "18",
+      "browser": "chromium",
+      "timeout_seconds": 60
+    }
+  },
+  
+  "quality_gates": {
+    "auth_contracts": {
+      "description": "Authentication contract validation",
+      "required": true,
+      "timeout_minutes": 5,
+      "retry_attempts": 2
+    },
+    "visual_integrity": {
+      "description": "Visual regression and asset validation",
+      "required": true,
+      "timeout_minutes": 10,
+      "retry_attempts": 1
+    },
+    "environment_guards": {
+      "description": "Environment safety and deployment readiness",
+      "required": true,
+      "timeout_minutes": 3,
+      "retry_attempts": 0
+    }
+  },
+  
+  "artifact_retention": {
+    "screenshots": "30 days",
+    "test_reports": "7 days",
+    "build_logs": "14 days",
+    "deployment_configs": "90 days"
+  },
+  
+  "notification_rules": {
+    "pr_comments": true,
+    "slack_alerts": false,
+    "email_alerts": false
+  }
+}
