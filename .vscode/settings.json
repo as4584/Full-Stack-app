@@ -1,5 +1,9 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "docker compose": true
+        "docker compose": true,
+        "/^cd /home/lex/lexmakesit && bash scripts/deploy_all\\.sh$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
