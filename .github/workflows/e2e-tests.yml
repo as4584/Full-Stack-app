@@ -39,6 +39,34 @@ jobs:
           fi
           echo "✅ Settings E2E test passed"
       
+      - name: Run Calendar E2E Test
+        env:
+          API_URL: ${{ secrets.PROD_API_URL || 'https://receptionist.lexmakesit.com' }}
+        run: |
+          cd backend
+          python3 test_calendar_e2e.py --url "$API_URL"
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ Calendar E2E test failed with exit code $EXIT_CODE"
+            echo "::error::Calendar integration test failed - blocking merge"
+            exit $EXIT_CODE
+          fi
+          echo "✅ Calendar E2E test passed"
+      
+      - name: Run Twilio E2E Test
+        env:
+          API_URL: ${{ secrets.PROD_API_URL || 'https://receptionist.lexmakesit.com' }}
+        run: |
+          cd backend
+          python3 test_twilio_e2e.py --url "$API_URL"
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ Twilio E2E test failed with exit code $EXIT_CODE"
+            echo "::error::Twilio phone integration test failed - blocking merge"
+            exit $EXIT_CODE
+          fi
+          echo "✅ Twilio E2E test passed"
+      
       - name: Run Smoke Tests (Fast)
         if: github.event_name == 'pull_request'
         env:
@@ -46,17 +74,45 @@ jobs:
           API_URL: ${{ secrets.PROD_API_URL || 'https://receptionist.lexmakesit.com' }}
         run: |
           cd backend
-          python3 test_settings_e2e.py --url "$API_URL"
-          EXIT_CODE=$?
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "❌ Smoke test failed with exit code $EXIT_CODE"
-            echo "::error::Smoke test failed - blocking merge"
-            exit $EXIT_CODE
+          echo "Running all smoke tests in parallel..."
+          
+          # Settings smoke test
+          python3 test_settings_e2e.py --url "$API_URL" &
+          PID_SETTINGS=$!
+          
+          # Calendar smoke test
+          python3 test_calendar_e2e.py --url "$API_URL" &
+          PID_CALENDAR=$!
+          
+          # Twilio smoke test
+          python3 test_twilio_e2e.py --url "$API_URL" &
+          PID_TWILIO=$!
+          
+          # Wait for all and collect exit codes
+          wait $PID_SETTINGS
+          EXIT_SETTINGS=$?
+          wait $PID_CALENDAR
+          EXIT_CALENDAR=$?
+          wait $PID_TWILIO
+          EXIT_TWILIO=$?
+          
+          # Report results
+          echo "Settings smoke: exit $EXIT_SETTINGS"
+          echo "Calendar smoke: exit $EXIT_CALENDAR"
+          echo "Twilio smoke: exit $EXIT_TWILIO"
+          
+          # Fail if any failed
+          if [ $EXIT_SETTINGS -ne 0 ] || [ $EXIT_CALENDAR -ne 0 ] || [ $EXIT_TWILIO -ne 0 ]; then
+            echo "❌ One or more smoke tests failed"
+            echo "::error::Smoke tests failed - blocking merge"
+            exit 1
           fi
-          echo "✅ Smoke test passed"
+          echo "✅ All smoke tests passed"
       
       - name: Test Summary
         if: always()
         run: |
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "- Settings E2E: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Calendar E2E: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Twilio E2E: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
