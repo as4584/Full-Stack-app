@@ -7,9 +7,14 @@ const nextConfig = {
   // Optimize for production
   compress: true,
   
-  // Image optimization
+  // Image optimization - using remotePatterns (Next.js 15+ compliant)
   images: {
-    domains: ['api.lexmakesit.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.lexmakesit.com',
+      },
+    ],
     formats: ['image/webp'],
   },
   
