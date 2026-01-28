@@ -1,0 +1,101 @@
+/* 
+ * CANONICAL WALLPAPER SYSTEM
+ * Single source of truth for all animated backgrounds across lexmakesit.com
+ * Last updated: 2026-01-24
+ */
+
+:root {
+    /* Wallpaper Asset URLs */
+    --wallpaper-primary: url('/static/images/waterfall.gif');
+    --wallpaper-fallback: url('/static/images/waterfall.png');
+    
+    /* Wallpaper Display Properties */
+    --wallpaper-size: cover;
+    --wallpaper-position: center center;
+    --wallpaper-attachment-desktop: fixed;
+    --wallpaper-attachment-mobile: scroll;
+    
+    /* Overlay Effects */
+    --wallpaper-overlay-gradient: linear-gradient(180deg, rgba(0, 209, 255, 0.2), rgba(0, 59, 135, 0.4));
+    --wallpaper-overlay-blur: 3px;
+}
+
+/* Base Wallpaper Mixin */
+.wallpaper-base {
+    background: var(--wallpaper-primary) no-repeat var(--wallpaper-position);
+    background-size: var(--wallpaper-size);
+    background-attachment: var(--wallpaper-attachment-desktop);
+    background-fallback: var(--wallpaper-fallback);
+}
+
+/* Full-screen wallpaper for pages */
+.wallpaper-fullscreen {
+    @extend .wallpaper-base;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Wallpaper with Frutiger Aero overlay */
+.wallpaper-with-overlay {
+    @extend .wallpaper-fullscreen;
+}
+
+.wallpaper-with-overlay::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--wallpaper-overlay-gradient);
+    backdrop-filter: blur(var(--wallpaper-overlay-blur));
+    z-index: -3;
+    pointer-events: none;
+}
+
+/* Dew effect overlay */
+.wallpaper-with-overlay::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.3;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Mobile optimization */
+@media (max-width: 1024px) {
+    .wallpaper-base,
+    .wallpaper-fullscreen,
+    .wallpaper-with-overlay {
+        background-attachment: var(--wallpaper-attachment-mobile);
+        /* Prevents mobile browser URL bar shifting issues */
+    }
+}
+
+/* Component-specific wallpaper usage */
+
+/* Homepage body wallpaper */
+body.homepage {
+    @extend .wallpaper-with-overlay;
+}
+
+/* Login page wallpaper (different variant) */
+body.login {
+    @extend .wallpaper-base;
+    background-image: var(--wallpaper-fallback); /* Uses static PNG for login */
+}
+
+/* AI Receptionist pricing page (future) */
+body.ai-receptionist {
+    @extend .wallpaper-with-overlay;
+}
+
+/* Dashboard pages (no wallpaper) */
+body.dashboard {
+    background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+}

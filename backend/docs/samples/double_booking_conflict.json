@@ -1,0 +1,57 @@
+{
+  "scenario": "double_booking_conflict",
+  "description": "User attempts to book when slot is already taken, assistant offers alternatives",
+  "expected_flow": [
+    "user_booking_request",
+    "assistant_conflict_detection",
+    "assistant_alternative_offer",
+    "user_accepts_alternative",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Emma and I'd like a haircut tomorrow at 2 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "I'd love to help you book a haircut, Emma! Unfortunately, tomorrow at 2 PM is already booked. I have availability at 1 PM or 3 PM tomorrow. Would either of those times work for you?",
+      "expected_actions": ["detect_conflict", "offer_alternatives"]
+    },
+    {
+      "role": "user",
+      "content": "3 PM would be great."
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! Let me confirm: haircut for Emma tomorrow at 3 PM. Shall I book this appointment?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, please."
+    },
+    {
+      "role": "assistant",
+      "content": "Wonderful! I've booked your haircut appointment. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Emma",
+          "service": "haircut",
+          "datetime": "tomorrow at 3 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_booking": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["booked", "confirmation"],
+    "no_double_booking": true
+  }
+}

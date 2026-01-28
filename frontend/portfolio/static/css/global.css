@@ -1,0 +1,85 @@
+/* 1. Variables & Reset */
+:root {
+    /* Frutiger Aero Palette - Ocean & Aqua */
+    --color-ocean-light: #60aaff;
+    --color-ocean-mid: #3d84ff;
+    --color-aqua: #9ff6ff;
+    --color-navy-text: #000000;
+    --color-white: #ffffff;
+
+    /* Gradients */
+    --gradient-ocean: linear-gradient(135deg, var(--color-ocean-light) 0%, var(--color-ocean-mid) 100%);
+    --gradient-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+
+    /* Typography */
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Spacing */
+    --section-spacing: clamp(4rem, 8vw, 6rem);
+    --container-width: 1000px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--color-navy-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+    /* Background handled in background.css */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-display);
+    color: var(--color-navy-text);
+    line-height: 1.2;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Typography Scaling */
+h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+h3 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+p {
+    font-size: clamp(1rem, 1.2vw, 1.125rem);
+}
+
+/* Utility */
+.text-center {
+    text-align: center;
+}
+
+.container {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}

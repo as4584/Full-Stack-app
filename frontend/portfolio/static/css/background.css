@@ -1,0 +1,134 @@
+/* 
+ * BACKGROUND SYSTEM - LEGACY COMPATIBILITY
+ * This file now imports the canonical wallpaper system
+ * Maintained for backward compatibility during transition
+ */
+
+@import './wallpaper-system.css';
+
+/* Apply wallpaper to body (Homepage) */
+body {
+    background: var(--wallpaper-primary) no-repeat center center fixed;
+    background-size: var(--wallpaper-size);
+    background-position: var(--wallpaper-position);
+    background-repeat: no-repeat;
+    background-attachment: var(--wallpaper-attachment-desktop);
+}
+
+@media (max-width: 1024px) {
+    body {
+        background: var(--wallpaper-primary) no-repeat center center;
+        background-size: var(--wallpaper-size);
+        background-attachment: var(--wallpaper-attachment-mobile);
+        /* Fix for mobile browser url bar shifting */
+    }
+}
+
+/* Frutiger Aero Overlay Gradient */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--wallpaper-overlay-gradient);
+    backdrop-filter: blur(var(--wallpaper-overlay-blur));
+    z-index: -3;
+    pointer-events: none;
+}
+
+/* Dew Overlay */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.3;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.aero-bubbles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -2;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -60px;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: rise 10s infinite linear;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes rise {
+    0% {
+        bottom: -60px;
+        transform: translateX(0);
+        opacity: 0.7;
+    }
+    100% {
+        bottom: 100vh;
+        transform: translateX(100px);
+        opacity: 0;
+    }
+}
+
+.bubble:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 8s; }
+.bubble:nth-child(2) { left: 20%; animation-delay: 2s; animation-duration: 10s; }
+.bubble:nth-child(3) { left: 30%; animation-delay: 4s; animation-duration: 12s; }
+.bubble:nth-child(4) { left: 40%; animation-delay: 1s; animation-duration: 9s; }
+.bubble:nth-child(5) { left: 50%; animation-delay: 3s; animation-duration: 11s; }
+.bubble:nth-child(6) { left: 60%; animation-delay: 5s; animation-duration: 8s; }
+.bubble:nth-child(7) { left: 70%; animation-delay: 2.5s; animation-duration: 10s; }
+.bubble:nth-child(8) { left: 80%; animation-delay: 4.5s; animation-duration: 9s; }
+.bubble:nth-child(9) { left: 90%; animation-delay: 1.5s; animation-duration: 12s; }
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+    border-radius: 50%;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+    animation: rise 120s infinite ease-in-out;
+    /* Constant slow speed */
+    will-change: transform, opacity;
+}
+
+@keyframes rise {
+    0% {
+        bottom: -100px;
+        transform: translateX(0) scale(1);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: translateX(50px) scale(1.1);
+    }
+
+    100% {
+        bottom: 120vh;
+        transform: translateX(-50px) scale(1.2);
+        opacity: 0;
+    }
+}

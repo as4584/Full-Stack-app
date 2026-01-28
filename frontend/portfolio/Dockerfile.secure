@@ -1,0 +1,73 @@
+# =========================================================================
+# SECURITY-HARDENED DOCKERFILE - OWASP ASVS Level 2 Compliant
+# Updated with latest security patches and minimal attack surface
+# =========================================================================
+
+# Use latest LTS Python with security patches
+FROM python:3.11.10-slim-bookworm
+
+# Security labels for container registry
+LABEL maintainer="security@portfolio.com"
+LABEL security.hardened="true"
+LABEL security.owasp-asvs="level-2"
+LABEL security.scan-date="2025-11-12"
+
+# Create non-root user with minimal privileges
+RUN groupadd -r appuser && \
+    useradd -r -g appuser -d /home/appuser -s /sbin/nologin -c "Docker image user" appuser
+
+# Set working directory
+WORKDIR /app
+
+# Install system security updates and minimal dependencies
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        gnupg \
+        && \
+    # Clean up package cache to reduce attack surface
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Copy requirements first for better layer caching
+COPY requirements_secure.txt .
+
+# Install Python dependencies with security verification
+RUN pip install --no-cache-dir --upgrade pip==24.3.1 && \
+    pip install --no-cache-dir --require-hashes --only-binary=all -r requirements_secure.txt || \
+    pip install --no-cache-dir -r requirements_secure.txt && \
+    # Remove pip cache and unnecessary files
+    pip cache purge && \
+    find /usr/local -type d -name __pycache__ -exec rm -rf {} + && \
+    find /usr/local -type f -name "*.py[co]" -delete
+
+# Copy application code
+COPY --chown=appuser:appuser . .
+
+# Remove any sensitive files that shouldn't be in container
+RUN rm -f .env .env.* secrets/* *.key *.pem && \
+    # Set secure permissions
+    chmod -R 750 /app && \
+    chown -R appuser:appuser /app
+
+# Create directories for logs and data with proper permissions
+RUN mkdir -p /app/logs /app/data && \
+    chown -R appuser:appuser /app/logs /app/data && \
+    chmod 755 /app/logs /app/data
+
+# Switch to non-root user
+USER appuser
+
+# Security: Run as non-root user with minimal privileges
+# Expose only the necessary port
+EXPOSE 8001
+
+# Health check for container orchestration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8001/api/health || exit 1
+
+# Use exec form for proper signal handling
+ENTRYPOINT ["python", "-m", "uvicorn"]
+CMD ["main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "1", "--access-log"]

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexMakesIt AI Receptionist - Never Miss Revenue</title>
+    <meta name="description"
+        content="24/7 AI receptionist that answers calls, books appointments, and sends SMS confirmations. Plans start at $75/mo with included minutes. Built on Twilio + OpenAI.">
+
+    <!-- Social Sharing / Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lexmakesit.com/projects/ai-receptionist">
+    <meta property="og:title" content="LexMakesIt AI Receptionist - Never Miss Revenue">
+    <meta property="og:description"
+        content="24/7 AI receptionist that answers calls, books appointments, and sends SMS confirmations. Built on Twilio + OpenAI.">
+    <meta property="og:image" content="https://lexmakesit.com/static/images/og-logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://lexmakesit.com/projects/ai-receptionist">
+    <meta property="twitter:title" content="LexMakesIt AI Receptionist - Never Miss Revenue">
+    <meta property="twitter:description"
+        content="24/7 AI receptionist that answers calls, books appointments, and sends SMS confirmations. Built on Twilio + OpenAI.">
+    <meta property="twitter:image" content="https://lexmakesit.com/static/images/og-logo.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Orbitron:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/global.css?v=2">
+    <link rel="stylesheet" href="/static/css/background.css?v=2">
+    <link rel="stylesheet" href="/static/css/glass.css?v=2">
+    <link rel="stylesheet" href="/static/css/buttons.css?v=2">
+    <link rel="stylesheet" href="/static/css/components.css?v=2">
+
+    <!-- JS -->
+    <script src="/static/js/aero.js" defer></script>
+
+    <style>
+        /* Fix contrast for all text */
+        h1,
+        h2,
+        h3,
+        h4,
+        p,
+        li,
+        td,
+        th {
+            color: #000000 !important;
+        }
+
+        /* Adjust labels that might be light */
+        .slider-container label span {
+            color: #000 !important;
+        }
+
+        /* Fix border line cutting through text (from gloss-overlay) */
+        .gloss-overlay {
+            border-bottom: none !important;
+            /* Remove the line */
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%) !important;
+        }
+
+        /* Page-specific styles */
+        .pricing-how {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem auto;
+            max-width: 700px;
+            border: 1px solid rgba(96, 170, 255, 0.3);
+        }
+
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-container label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(96, 170, 255, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-ocean-mid);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--color-ocean-mid);
+            background: transparent;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background: var(--color-ocean-mid);
+            color: white;
+        }
+
+        .break-even-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(96, 170, 255, 0.2));
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 2rem 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            color: #000 !important;
+            /* Force black text */
+        }
+
+        .comparison-table th {
+            background: rgba(96, 170, 255, 0.1);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table .highlight-row {
+            background: rgba(16, 185, 129, 0.1);
+            font-weight: 600;
+        }
+
+        .competitor-price {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .our-price {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .trust-block {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .trust-block h4 {
+            color: var(--color-ocean-mid);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .case-study {
+            background: rgba(96, 170, 255, 0.1);
+            border-left: 3px solid var(--color-ocean-mid);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .case-study .metric {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-ocean-mid);
+        }
+
+        .risk-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .tier-minutes {
+            background: rgba(96, 170, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .addon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .addon-item {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .addon-price {
+            font-weight: 700;
+            color: var(--color-ocean-mid);
+        }
+
+        @media (max-width: 768px) {
+            .comparison-table {
+                font-size: 0.85rem;
+                background: rgba(255, 255, 255, 0.7);
+                /* Better background contrast on mobile */
+                border-radius: 8px;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.75rem 0.5rem;
+                color: #000 !important;
+                /* Ensure black text on mobile */
+            }
+
+            .hero h1 {
+                font-size: 2rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Bubbles Container (Populated by JS) -->
+    <div class="aero-bubbles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo-text">lexmakesit</a>
+
+            <!-- Desktop Nav Links -->
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/#portfolio" class="nav-link">Work</a>
+                <a href="/#about" class="nav-link">About</a>
+                <a href="/pricing" class="nav-link" style="color: var(--color-ocean-mid); font-weight: 700;">Pricing</a>
+                <a href="https://dashboard.lexmakesit.com" class="nav-link"
+                    style="color: var(--color-ocean-mid); font-weight: 700;">Dashboard</a>
+            </div>
+
+            <!-- Hamburger Menu (Mobile) -->
+            <div class="hamburger" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="nav-mobile" id="mobileNav">
+        <a href="/" class="nav-link" onclick="toggleMobileNav()">Home</a>
+        <a href="/#portfolio" class="nav-link" onclick="toggleMobileNav()">Work</a>
+        <a href="/#about" class="nav-link" onclick="toggleMobileNav()">About</a>
+        <a href="/pricing" class="nav-link" onclick="toggleMobileNav()"
+            style="color: var(--color-ocean-mid); font-weight: 700;">Pricing</a>
+        <a href="https://dashboard.lexmakesit.com" class="nav-link"
+            style="color: var(--color-ocean-mid); font-weight: 700;">Dashboard</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero aero-section">
+        <div class="glass-panel text-center">
+            <div class="gloss-overlay"></div>
+            <h1 style="margin-bottom: 1rem;">Never Miss Revenue</h1>
+            <h2 style="font-size: 1.5rem; margin-bottom: 2rem; color: var(--color-ocean-mid);">
+                The AI receptionist that answers calls 24/7.
+            </h2>
+            <p style="margin-bottom: 1.5rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+                Book appointments, answer FAQs, and send SMS confirmations automatically.
+            </p>
+
+            <!-- Pricing Clarity Block -->
+            <div class="pricing-how">
+                <strong style="color: var(--color-ocean-mid);">💰 Transparent Pricing</strong>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem;">
+                    Plans start at <strong>$75/mo</strong> with included minutes. Usage is based on call minutes (Twilio
+                    + AI voice).
+                    Our 4-tier structure is designed to scale with your business. You'll always see
+                    your usage and can cap spending.
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <a href="#roi-calculator" class="aero-btn">Calculate Savings</a>
+                <a href="#demo" class="aero-btn"
+                    style="background: transparent; border: 1px solid var(--color-ocean-mid); color: var(--color-navy-text);">See
+                    Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 2rem; color: var(--color-ocean-mid);">Live Call Simulation
+            </h2>
+
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div class="glass-card" style="padding: 2rem; background: rgba(255,255,255,0.4);">
+                    <div class="gloss-overlay"></div>
+
+                    <div style="margin-bottom: 1.5rem; text-align: left;">
+                        <span
+                            style="font-size: 0.8rem; color: var(--color-ocean-mid); font-weight: bold;">CUSTOMER</span>
+                        <div
+                            style="background: rgba(255,255,255,0.6); padding: 1rem; border-radius: 12px 12px 12px 0; margin-top: 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                            "Hi! I'd like to book an appointment for Tuesday at 2 PM."
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem; text-align: right;">
+                        <span style="font-size: 0.8rem; color: var(--color-ocean-mid); font-weight: bold;">AI
+                            RECEPTIONIST</span>
+                        <div
+                            style="background: var(--color-ocean-light); color: white; padding: 1rem; border-radius: 12px 12px 0 12px; margin-top: 0.5rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            "Perfect! I've booked you for Tuesday 2 PM. You'll receive a confirmation text shortly."
+                        </div>
+                    </div>
+
+                    <div
+                        style="text-align: center; margin-top: 1.5rem; color: var(--color-ocean-mid); font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span
+                            style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
+                        Booking confirmed + SMS sent automatically
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI Calculator Section -->
+    <section id="roi-calculator" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 1rem; color: var(--color-ocean-mid);">Calculate Your Savings
+            </h2>
+            <p class="text-center" style="margin-bottom: 3rem;">See exactly how much you save vs. a human receptionist.
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+                <!-- Inputs -->
+                <div>
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem;">Your Business Stats</h3>
+
+                    <!-- Calls per month -->
+                    <div class="slider-container">
+                        <label>
+                            <span>Calls per Month</span>
+                            <span id="calls-value" style="color: var(--color-ocean-mid); font-weight: bold;">80</span>
+                        </label>
+                        <input type="range" id="calls-per-month" min="10" max="500" value="80" oninput="calculateROI()">
+                    </div>
+
+                    <!-- Average call length -->
+                    <div class="slider-container">
+                        <label>
+                            <span>Avg. Call Length (minutes)</span>
+                            <span id="length-value" style="color: var(--color-ocean-mid); font-weight: bold;">3</span>
+                        </label>
+                        <input type="range" id="call-length" min="1" max="10" value="3" oninput="calculateROI()">
+                    </div>
+
+                    <!-- Appointment value -->
+                    <div class="slider-container">
+                        <label>
+                            <span>Value of one Lead</span>
+                            <span id="value-value" style="color: var(--color-ocean-mid); font-weight: bold;">$100</span>
+                        </label>
+                        <input type="range" id="appointment-value" min="25" max="500" step="25" value="100"
+                            oninput="calculateROI()">
+                    </div>
+
+                    <!-- Hourly wage toggle -->
+                    <div>
+                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Receptionist Hourly
+                            Cost</label>
+                        <div class="toggle-container">
+                            <button class="toggle-btn active" id="bls-toggle" onclick="toggleWage('bls')">BLS Median
+                                ($17.90/hr)</button>
+                            <button class="toggle-btn" id="custom-toggle" onclick="toggleWage('custom')">Custom</button>
+                            <input type="number" id="custom-wage" value="17.90" min="10" max="50" step="0.50"
+                                style="width: 80px; padding: 8px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); display: none;"
+                                oninput="calculateROI()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="text-center">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">Your Monthly Savings</h3>
+
+                    <div id="monthly-savings"
+                        style="font-size: 3.5rem; font-weight: 700; color: var(--color-ocean-mid); font-family: var(--font-display); margin-bottom: 0.5rem;">
+                        $2,754
+                    </div>
+                    <p style="margin-bottom: 2rem; color: var(--color-navy-text);">saved per month</p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.5); padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 0.8rem; color: var(--color-navy-text);">AI Cost (Pro Plan)</div>
+                            <div id="ai-cost"
+                                style="font-weight: bold; color: var(--color-ocean-mid); font-size: 1.2rem; font-family: var(--font-display);">
+                                $149</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.5); padding: 1rem; border-radius: 12px;">
+                            <div style="font-size: 0.8rem; color: var(--color-navy-text);">Human Cost</div>
+                            <div id="human-cost"
+                                style="font-weight: bold; color: #ef4444; font-size: 1.2rem; font-family: var(--font-display);">
+                                $2,864</div>
+                        </div>
+                    </div>
+
+                    <!-- Break-even calculation -->
+                    <div class="break-even-box">
+                        <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">🎯 Break-even Point</div>
+                        <div id="break-even"
+                            style="font-size: 1.1rem; font-weight: 600; color: var(--color-navy-text);">
+                            You only need <strong style="color: var(--color-ocean-mid);">2 leads</strong>
+                            to pay for this plan.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competitor Comparison Section -->
+    <section id="comparison" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 1rem; color: var(--color-ocean-mid);">Compared to the
+                Alternatives</h2>
+            <p class="text-center" style="margin-bottom: 2rem;">See how we stack up against live and AI receptionist
+                services.</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>What You Get</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Ruby Receptionists</strong></td>
+                        <td>Live Human</td>
+                        <td class="competitor-price">$309/mo for 100 min</td>
+                        <td>~$3.09/min • Premium live agents</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Smith.ai (Live)</strong></td>
+                        <td>Live Human</td>
+                        <td class="competitor-price">$300/mo for 30 calls</td>
+                        <td>~$10/call • Overage $11.50/call</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Smith.ai (AI)</strong></td>
+                        <td>AI Only</td>
+                        <td class="competitor-price">$95/mo for 50 calls</td>
+                        <td>~$1.90/call • Overage $2.40/call</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nexa</strong></td>
+                        <td>Live Human</td>
+                        <td class="competitor-price">$239/mo for 100 min</td>
+                        <td>~$2.39/min • Industry-specific</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dialzara</strong></td>
+                        <td>AI Only</td>
+                        <td class="competitor-price">$29+/mo</td>
+                        <td>Basic AI answering</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td><strong>lexmakesit AI Receptionist</strong></td>
+                        <td>AI + Booking</td>
+                        <td class="our-price">$75/mo for 100 min</td>
+                        <td>~$0.75/min • Calendar booking • SMS • Lead capture</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="text-center" style="margin-top: 2rem;">
+                <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+                    <strong style="color: var(--color-ocean-mid);">We're priced for SMBs</strong> who want automation +
+                    booking + SMS without paying premium per-call rates or live-agent overhead.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 3rem; color: var(--color-ocean-mid);">Simple, Transparent
+                Pricing</h2>
+
+            <div class="projects-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+                <!-- Starter -->
+                <div class="glass-card text-center">
+                    <div class="gloss-overlay"></div>
+                    <h3 style="margin-bottom: 0.25rem;">Starter</h3>
+                    <p style="font-size: 0.85rem; color: var(--color-ocean-mid); margin-bottom: 0.5rem;">Never miss a
+                        call</p>
+                    <div
+                        style="font-size: 2.5rem; font-weight: 700; color: var(--color-ocean-mid); margin: 1rem 0; font-family: var(--font-display);">
+                        $75<span style="font-size: 1rem; color: var(--color-navy-text); font-weight: normal;">/mo</span>
+                    </div>
+                    <div class="tier-minutes">
+                        <strong>100 minutes included</strong><br>
+                        <span style="font-size: 0.8rem;">Overage: $0.25/min</span>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;"><em>For solo operators who mainly need calls
+                            answered.</em></p>
+                    <ul style="text-align: left; margin-bottom: 2rem; padding-left: 1rem; font-size: 0.9rem;">
+                        <li style="margin-bottom: 0.5rem;">✓ 1 phone number included</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Google Calendar booking</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Lead capture & call logs</li>
+                        <li style="margin-bottom: 0.5rem;">✓ SMS confirmations (Twilio)</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="openCheckout('starter')" class="aero-btn"
+                        style="width: 100%; font-size: 0.9rem;">Get Started</a>
+                </div>
+
+                <!-- Professional -->
+                <div class="glass-card text-center"
+                    style="border: 2px solid var(--color-ocean-mid); transform: scale(1.03);">
+                    <div class="gloss-overlay"></div>
+                    <div
+                        style="background: var(--color-ocean-mid); color: white; padding: 4px 12px; border-radius: 12px; display: inline-block; font-size: 0.8rem; margin-bottom: 0.5rem; font-weight: bold;">
+                        RECOMMENDED</div>
+                    <h3 style="margin-bottom: 0.25rem;">Professional</h3>
+                    <p style="font-size: 0.85rem; color: var(--color-ocean-mid); margin-bottom: 0.5rem;">For growing
+                        service teams</p>
+                    <div
+                        style="font-size: 2.5rem; font-weight: 700; color: var(--color-ocean-mid); margin: 1rem 0; font-family: var(--font-display);">
+                        $150<span
+                            style="font-size: 1rem; color: var(--color-navy-text); font-weight: normal;">/mo</span>
+                    </div>
+                    <div class="tier-minutes">
+                        <strong>425 minutes included</strong><br>
+                        <span style="font-size: 0.8rem;">Overage: $0.22/min</span>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;"><em>High ROI for busy service businesses.</em>
+                    </p>
+                    <ul style="text-align: left; margin-bottom: 2rem; padding-left: 1rem; font-size: 0.9rem;">
+                        <li style="margin-bottom: 0.5rem;">✓ Everything in Starter</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Up to 3 phone numbers</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Multi-staff calendars</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Call transfers & routing</li>
+                        <li style="margin-bottom: 0.5rem;">✓ CRM integration (Webhooks)</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="openCheckout('professional')" class="aero-btn"
+                        style="width: 100%; font-size: 0.9rem;">Start Free Pilot</a>
+                </div>
+
+                <!-- Business -->
+                <div class="glass-card text-center">
+                    <div class="gloss-overlay"></div>
+                    <h3 style="margin-bottom: 0.25rem;">Business</h3>
+                    <p style="font-size: 0.85rem; color: var(--color-ocean-mid); margin-bottom: 0.5rem;">Multi-location
+                        power</p>
+                    <div
+                        style="font-size: 2.5rem; font-weight: 700; color: var(--color-ocean-mid); margin: 1rem 0; font-family: var(--font-display);">
+                        $250<span
+                            style="font-size: 1rem; color: var(--color-navy-text); font-weight: normal;">/mo</span>
+                    </div>
+                    <div class="tier-minutes">
+                        <strong>900 minutes included</strong><br>
+                        <span style="font-size: 0.8rem;">Overage: $0.18/min</span>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;"><em>For multi-location or high-volume SMBs.</em>
+                    </p>
+                    <ul style="text-align: left; margin-bottom: 2rem; padding-left: 1rem; font-size: 0.9rem;">
+                        <li style="margin-bottom: 0.5rem;">✓ Everything in Professional</li>
+                        <li style="margin-bottom: 0.5rem;">✓ 900 minutes included</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Native CRM integrations</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Priority 24/7 support</li>
+                        <li style="margin-bottom: 0.5rem;">✓ VIP onboarding</li>
+                    </ul>
+                    <a href="/#contact" class="aero-btn"
+                        style="width: 100%; font-size: 0.9rem; background: transparent; border: 1px solid var(--color-ocean-mid); color: var(--color-navy-text);">Contact
+                        Sales</a>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="glass-card text-center">
+                    <div class="gloss-overlay"></div>
+                    <h3 style="margin-bottom: 0.25rem;">Enterprise</h3>
+                    <p style="font-size: 0.85rem; color: var(--color-ocean-mid); margin-bottom: 0.5rem;">Customized for
+                        Scale</p>
+                    <div
+                        style="font-size: 2.5rem; font-weight: 700; color: var(--color-ocean-mid); margin: 1rem 0; font-family: var(--font-display);">
+                        Custom<span style="font-size: 1rem; color: var(--color-navy-text); font-weight: normal;"></span>
+                    </div>
+                    <div class="tier-minutes">
+                        <strong>Bulk Volume Pricing</strong><br>
+                        <span style="font-size: 0.8rem;">Custom minute packages</span>
+                    </div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;"><em>For agencies, resellers & enterprise
+                            needs.</em></p>
+                    <ul style="text-align: left; margin-bottom: 2rem; padding-left: 1rem; font-size: 0.9rem;">
+                        <li style="margin-bottom: 0.5rem;">✓ Custom minute pools</li>
+                        <li style="margin-bottom: 0.5rem;">✓ White-labeling available</li>
+                        <li style="margin-bottom: 0.5rem;">✓ BYOT (Bring Your Own Twilio)</li>
+                        <li style="margin-bottom: 0.5rem;">✓ Dedicated account manager</li>
+                        <li style="margin-bottom: 0.5rem;">✓ SLA & custom contracts</li>
+                    </ul>
+                    <a href="/#contact" class="aero-btn"
+                        style="width: 100%; font-size: 0.9rem; background: transparent; border: 1px solid var(--color-ocean-mid); color: var(--color-navy-text);">Contact
+                        Sales</a>
+                </div>
+            </div>
+
+            <!-- Add-ons -->
+            <div style="margin-top: 3rem;">
+                <h3 class="text-center" style="margin-bottom: 1rem;">Add-ons</h3>
+                <div class="addon-grid">
+                    <div class="addon-item">
+                        <span>Extra Phone Number</span>
+                        <span class="addon-price">$10/mo</span>
+                    </div>
+                    <div class="addon-item">
+                        <span>Extra Calendar</span>
+                        <span class="addon-price">$5/mo</span>
+                    </div>
+                    <div class="addon-item">
+                        <span>Done-for-You Setup</span>
+                        <span class="addon-price">$299</span>
+                    </div>
+                    <div class="addon-item">
+                        <span>Custom Voice Training</span>
+                        <span class="addon-price">$199</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Risk Reversal Section -->
+    <!-- Risk Reversal Section Removed by Request -->
+
+    <!-- Trust Blocks Section -->
+    <section id="trust" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 2rem; color: var(--color-ocean-mid);">Why Businesses Trust Us
+            </h2>
+
+            <div class="trust-grid">
+                <!-- Authority -->
+                <div class="trust-block">
+                    <h4>🔧 Enterprise Infrastructure</h4>
+                    <p style="margin-bottom: 1rem;">Powered by <strong>Twilio</strong> and <strong>OpenAI's
+                            GPT-4</strong>. We pass savings to you with transparent pricing.</p>
+                    <div
+                        style="background: rgba(96, 170, 255, 0.1); padding: 0.75rem; border-radius: 8px; font-size: 0.85rem;">
+                        <strong>🛡️ Intelligent Spam Shield</strong><br>
+                        Every incoming call is pre-screened for spam scores and line-type (VoIP/Mobile). Scammers are
+                        hung up on automatically before your minutes are used.
+                    </div>
+                </div>
+
+                <!-- Social Proof -->
+                <div class="trust-block">
+                    <h4>📈 Real Results</h4>
+                    <div class="case-study">
+                        <div class="metric">18 appointments</div>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem;">booked in first 14 days — Bella Vista Salon
+                        </p>
+                    </div>
+                    <div class="case-study">
+                        <div class="metric">42% fewer</div>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem;">missed calls — Kim's HVAC Services</p>
+                    </div>
+                    <div class="case-study">
+                        <div class="metric">$2,400/mo</div>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.9rem;">saved vs. part-time receptionist — Local
+                            Dental Practice</p>
+                    </div>
+                </div>
+
+                <!-- Unity -->
+                <div class="trust-block">
+                    <h4>🤝 Built for Small Business</h4>
+                    <p style="margin-bottom: 1rem;">
+                        We built this for service businesses who can't afford to miss calls but can't afford a full-time
+                        receptionist.
+                    </p>
+                    <div
+                        style="background: rgba(16, 185, 129, 0.1); padding: 0.75rem; border-radius: 8px; font-size: 0.85rem;">
+                        <strong>🧠 Self-Correcting AI (RAG 2.0)</strong><br>
+                        Every update you make is "stress-tested" by an automated auditor. Our backend simulates calls to
+                        ensure your AI never hallucinates or gives wrong info.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-top">
+        <div class="container text-center" style="padding: 3rem 0;">
+            <p style="color: var(--color-navy-text); margin-bottom: 1rem;">© 2025 Lex Santiago. Built with FastAPI
+                & Aero Design.</p>
+            <p style="font-style: italic; color: var(--color-ocean-mid); margin-bottom: 2rem;">"Still learning, always
+                building."</p>
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/about" class="nav-link">About</a>
+                <a href="/privacy-policy" class="nav-link">Privacy Policy</a>
+                <a href="/terms" class="nav-link">Terms of Service</a>
+                <a href="https://github.com/as4584" class="nav-link">GitHub</a>
+                <a href="https://instagram.com/httpslovelex" class="nav-link">Instagram</a>
+                <a href="/#contact" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced ROI Calculator
+        let useCustomWage = false;
+        const BLS_WAGE = 17.90;
+
+        function toggleWage(type) {
+            const blsBtn = document.getElementById('bls-toggle');
+            const customBtn = document.getElementById('custom-toggle');
+            const customInput = document.getElementById('custom-wage');
+
+            if (type === 'bls') {
+                useCustomWage = false;
+                blsBtn.classList.add('active');
+                customBtn.classList.remove('active');
+                customInput.style.display = 'none';
+            } else {
+                useCustomWage = true;
+                customBtn.classList.add('active');
+                blsBtn.classList.remove('active');
+                customInput.style.display = 'inline-block';
+            }
+            calculateROI();
+        }
+
+        function calculateROI() {
+            const callsPerMonth = parseInt(document.getElementById('calls-per-month').value);
+            const callLength = parseInt(document.getElementById('call-length').value);
+            const appointmentValue = parseInt(document.getElementById('appointment-value').value);
+            const hourlyWage = useCustomWage
+                ? parseFloat(document.getElementById('custom-wage').value)
+                : BLS_WAGE;
+
+            // Update slider display values
+            document.getElementById('calls-value').textContent = callsPerMonth;
+            document.getElementById('length-value').textContent = callLength;
+            document.getElementById('value-value').textContent = '$' + appointmentValue;
+
+            // Calculate total minutes
+            const totalMinutes = callsPerMonth * callLength;
+
+            // Determine best plan and cost
+            let planName, planCost, includedMinutes, overageRate;
+            if (totalMinutes <= 250) {
+                planName = 'Starter';
+                planCost = 75;
+                includedMinutes = 250;
+                overageRate = 0.25;
+            } else if (totalMinutes <= 850) {
+                planName = 'Professional';
+                planCost = 150;
+                includedMinutes = 850;
+                overageRate = 0.22;
+            } else if (totalMinutes <= 1800) {
+                planName = 'Business';
+                planCost = 250;
+                includedMinutes = 1800;
+                overageRate = 0.18;
+            } else {
+                planName = 'Enterprise';
+                planCost = 500;
+                includedMinutes = 3500;
+                overageRate = 0.15;
+            }
+
+            // Calculate overage
+            const overageMinutes = Math.max(0, totalMinutes - includedMinutes);
+            const overageCost = overageMinutes * overageRate;
+            const aiMonthlyCost = planCost + overageCost;
+
+            // Calculate human cost (assuming 160 hours/month for full-time, prorated)
+            // Average call handling: each call takes callLength + 2 min overhead
+            const humanMinutesPerCall = callLength + 2;
+            const humanHoursNeeded = (callsPerMonth * humanMinutesPerCall) / 60;
+            const humanMonthlyCost = humanHoursNeeded * hourlyWage;
+
+            // Calculate savings
+            const monthlySavings = humanMonthlyCost - aiMonthlyCost;
+
+            // Calculate break-even
+            const breakEvenAppointments = Math.ceil(planCost / appointmentValue);
+
+            // Update display
+            document.getElementById('ai-cost').innerHTML = '$' + aiMonthlyCost.toFixed(0) + '<br><span style="font-size: 0.7rem; font-weight: normal;">(' + planName + ' Plan)</span>';
+            document.getElementById('human-cost').textContent = '$' + humanMonthlyCost.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('monthly-savings').textContent = '$' + Math.max(0, monthlySavings).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('break-even').innerHTML = 'You only need <strong style="color: var(--color-ocean-mid);">' + breakEvenAppointments + ' lead' + (breakEvenAppointments > 1 ? 's' : '') + '</strong> to pay for this plan.';
+        }
+
+        // Calculate initial ROI on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            calculateROI();
+        });
+
+        // Mobile Navigation Toggle
+        function toggleMobileNav() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.toggle('active');
+        }
+
+        // Checkout Modal
+        function openCheckout(tier) {
+            // Check for VIP/Setup Fee in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const includeSetupFee = urlParams.get('vip') === 'true';
+
+            const email = prompt('Enter your email to get started:' + (includeSetupFee ? '\n(VIP Setup Fee Included)' : ''));
+            if (!email || !email.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            // Show loading state
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = includeSetupFee ? 'Processing VIP Order...' : 'Processing...';
+            btn.style.pointerEvents = 'none';
+
+            // Create checkout session
+            fetch('/api/stripe/create-checkout-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tier: tier,
+                    email: email,
+                    include_setup_fee: includeSetupFee
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.checkout_url) {
+                        window.location.href = data.checkout_url;
+                    } else {
+                        throw new Error(data.detail || 'Failed to create checkout');
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message + '\n\nPlease try again or contact support.');
+                    btn.textContent = originalText;
+                    btn.style.pointerEvents = 'auto';
+                });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,965 @@
+/* Frutiger Aero Command Center */
+
+.appContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: url('https://lexmakesit.com/static/images/waterfall.gif');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    contain: paint;
+    /* Performance optimization */
+}
+
+.header {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.75rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.headerContent {
+    width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.navLink {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(5px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.navLink:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.phoneBadge {
+    background: linear-gradient(135deg, #7FFF00 0%, #6FEF00 100%);
+    color: #004d00;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 0 15px rgba(127, 255, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logoutBtn {
+    background: rgba(255, 59, 48, 0.2);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: #ff9f9f;
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logoutBtn:hover {
+    background: rgba(255, 59, 48, 0.4);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 59, 48, 0.3);
+}
+
+.main {
+    flex: 1;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.commandCenter {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Loading State */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    /* Adjust for header */
+    gap: 20px;
+    color: white;
+    font-size: 18px;
+}
+
+.loadingOrb {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #7FFF00 0%, #6FEF00 100%);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+}
+
+/* Sidebar */
+.sidebar {
+    width: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    flex-shrink: 0;
+    z-index: 100;
+}
+
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 8px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    margin: 0 8px;
+}
+
+.navItem:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.navItem.active {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.navIcon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.navLabel {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Main Content Area */
+.mainContent {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 100%;
+}
+
+/* Right Column (now part of flex flow on mobile) */
+.rightColumn {
+    width: 320px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+/* Cards & Components */
+/* Cards & Components */
+.aiStatusCard,
+.callQueueCard,
+.recentLogsCard,
+.transcriptCard,
+.healthCard,
+.scheduleCard,
+.knowledgeCard {
+    /* Quiet Zone: High opacity gradient for readability */
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.92));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Step 2: Semantic Color Hierarchy */
+.textAi {
+    color: #2F7A75;
+    /* Calm desaturated teal/green */
+    font-weight: 600;
+    /* Step 4: Heavier weight for AI */
+}
+
+.textCaller {
+    color: #333333;
+    /* Neutral dark gray */
+    font-weight: 400;
+}
+
+.textSystem {
+    color: #5A7B8C;
+    /* Muted cyan/blue */
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    /* Step 4: Increased spacing */
+    text-transform: uppercase;
+}
+
+/* Step 3: Section Anchors */
+.sectionAnchor {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 6px 16px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2F7A75;
+    /* Using semantic system label color kind of */
+}
+
+/* Step 4: Transcript Typography */
+.transcriptContent {
+    line-height: 1.6;
+    /* Increased legibility */
+}
+
+/* Calendar Styles */
+.miniCalendar {
+    margin-bottom: 1rem;
+}
+
+.calendarHeader {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.calendarDays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+
+.calendarDays span {
+    font-size: 13px;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: default;
+    transition: background 0.2s;
+}
+
+.calendarDays span:hover:not(:empty) {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.today {
+    background: #4A90E2 !important;
+    color: white;
+    font-weight: bold;
+}
+
+.hasBooking {
+    position: relative;
+    border: 1px solid rgba(127, 255, 0, 0.4);
+}
+
+.bookingDot {
+    width: 4px;
+    height: 4px;
+    background-color: #7FFF00;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.blockTimeBtn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(180deg, #ffffff 0%, #e6e6e6 100%);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.blockTimeBtn:hover {
+    background: linear-gradient(180deg, #f0f0f0 0%, #dcdcdc 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Transcript Buttons */
+.transcriptActions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.actionBtnSm {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.actionBtnSm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 100%);
+}
+
+.cardTitle {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.aiStatusContent {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.statusOrb {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.orbInner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.5);
+}
+
+.statusOrb.active .orbInner {
+    background: radial-gradient(circle at 30% 30%, #7FFF00 0%, #6FEF00 100%);
+    animation: pulseGlow 2s infinite;
+}
+
+.statusOrb.inactive .orbInner {
+    background: radial-gradient(circle at 30% 30%, #CCCCCC 0%, #AAAAAA 100%);
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px rgba(127, 255, 0, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(127, 255, 0, 0.8);
+    }
+}
+
+.statusInfo h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.statusText {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.statusText.active {
+    color: #4CAF50;
+    font-weight: 700;
+}
+
+.statusText.inactive {
+    color: #9E9E9E;
+}
+
+.statusText.unavailable {
+    color: #FFC107;
+    font-weight: 700;
+}
+
+.warningText {
+    font-size: 12px;
+    color: #FF5252;
+    margin: 4px 0 0 0;
+    font-weight: 500;
+}
+
+.statusOrb.warning .orbInner {
+    background: radial-gradient(circle at 30% 30%, #FFD700 0%, #FFC107 100%);
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+}
+
+.loadingSpinnerSmall {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #3d84ff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.toggleWrapper {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.toggleInput {
+    display: none;
+}
+
+.toggleSlider {
+    width: 50px;
+    height: 26px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 13px;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.toggleInput:checked+.toggleSlider {
+    background: #7FFF00;
+}
+
+.toggleKnob {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggleInput:checked+.toggleSlider .toggleKnob {
+    left: 25px;
+}
+
+.toggleLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    min-width: 30px;
+}
+
+/* Call Queue */
+.queueHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.queueOrb {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(180deg, #4A90E2 0%, #3A80D2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+}
+
+.queueHeader h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.queueSubtext {
+    font-size: 13px;
+    color: #666;
+}
+
+.queueList {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.queueChip {
+    padding: 6px 12px;
+    background: linear-gradient(180deg, #FFD700 0%, #FFC700 100%);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #000;
+}
+
+/* Logs */
+.recentLogsCard h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.cardHeaderWithAction {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.refreshBtn {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.refreshBtn:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: rotate(180deg);
+}
+
+.logsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.logItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    gap: 12px;
+}
+
+.logMainInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.logName {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.logSummary {
+    margin: 0;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.logDuration {
+    font-size: 11px;
+    font-weight: 600;
+    color: #4A90E2;
+    background: rgba(74, 144, 226, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.logTags {
+    display: flex;
+    gap: 6px;
+}
+
+.chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.booked {
+    background: #7FFF00;
+    color: #000;
+}
+
+/* Health */
+.healthGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.healthItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.healthOrb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.healthOrb.connected,
+.healthOrb.healthy,
+.healthOrb.synced,
+.healthOrb.ok {
+    background: radial-gradient(circle, #7FFF00 0%, #6FEF00 100%);
+}
+
+.healthOrb.inactive {
+    background: radial-gradient(circle, #CCCCCC 0%, #AAAAAA 100%);
+}
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+    .commandCenter {
+        flex-direction: column;
+        /* Stack vertically */
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        position: sticky;
+        top: 0;
+        padding: 6px 0;
+        /* Reduced padding */
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        z-index: 1000;
+        /* Ensure on top */
+    }
+
+    .sidebarNav {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        /* Spread evenly */
+        gap: 2px;
+        /* Small gap */
+        padding: 0 4px;
+    }
+
+    .navItem {
+        flex-direction: column;
+        /* Stack vertically to save horizontal space */
+        gap: 4px;
+        padding: 6px 4px;
+        flex: 1;
+        /* Force equal width */
+        justify-content: center;
+        margin: 0;
+        min-width: 0;
+        /* Allow shrinking */
+    }
+
+    .navIcon {
+        font-size: 20px;
+        margin-bottom: 0;
+    }
+
+    .navLabel {
+        font-size: 10px;
+        /* Smaller font */
+        white-space: nowrap;
+        /* Prevent wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* Handle overflow gracefully */
+        text-align: center;
+        width: 100%;
+    }
+
+    .rightColumn {
+        width: 100%;
+        order: 2;
+        /* Put calendar at bottom */
+        display: flex;
+        /* Ensure it's visible! */
+    }
+
+    .mainContent {
+        order: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .healthGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .transcriptActions {
+        justify-content: center;
+    }
+}
+
+/* Scroll friendliness */
+.mainContent,
+.rightColumn {
+    overflow-y: visible;
+    /* Let the body handle scrolling */
+}
+
+
+/* Skeletons */
+.skeleton {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.05),
+            transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.skeletonText {
+    height: 14px;
+    width: 80%;
+    margin-bottom: 8px;
+}
+
+.skeletonTitle {
+    height: 24px;
+    width: 50%;
+    margin-bottom: 16px;
+}
+
+.skeletonOrb {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+/* Modals */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modalContent {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 24px;
+    width: 500px;
+    max-width: 95%;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modalHeader h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #4A90E2 0%, #9013FE 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.modalHeader button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.searchBox {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.searchBox input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.searchBox button {
+    padding: 0 24px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.searchResults {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.searchResultItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.searchResultItem button {
+    background: #7FFF00;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #005c00;
+}

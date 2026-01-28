@@ -1,0 +1,55 @@
+{
+  "scenario": "ambiguous_datetime_request",
+  "description": "User requests haircut with vague time reference that needs clarification",
+  "expected_flow": [
+    "user_vague_request",
+    "assistant_clarification_datetime",
+    "user_provides_specific_time",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Mike and I need a haircut sometime this week."
+    },
+    {
+      "role": "assistant",
+      "content": "I'd be happy to help you book a haircut, Mike! Could you specify which day this week and what time would work best for you?",
+      "expected_actions": ["clarify_specific_datetime"]
+    },
+    {
+      "role": "user", 
+      "content": "How about Wednesday at 3 PM?"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! Let me confirm: haircut for Mike on Wednesday at 3 PM. Shall I book this appointment for you?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, please book it."
+    },
+    {
+      "role": "assistant",
+      "content": "Excellent! I've booked your haircut appointment. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Mike",
+          "service": "haircut",
+          "datetime": "Wednesday at 3 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_booking": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["booked", "confirmation"]
+  }
+}

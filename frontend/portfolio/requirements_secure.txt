@@ -1,0 +1,50 @@
+# =========================================================================
+# SECURITY-HARDENED REQUIREMENTS - Updated to Latest Secure Versions
+# =========================================================================
+
+# Web Framework - Latest secure versions
+fastapi==0.115.3
+uvicorn[standard]==0.32.1
+
+# Security & Authentication - Latest secure versions  
+python-jose[cryptography]==3.4.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.1
+
+# Data Validation - Latest secure versions
+pydantic==2.12.4
+pydantic-settings==2.6.1
+email-validator==2.2.0
+
+# HTTP & Networking - Latest secure versions
+httpx==0.28.1
+aiosmtplib==3.0.1
+python-multipart==0.0.18
+
+# Database - Latest secure versions
+asyncpg==0.29.0
+psycopg2-binary==2.9.10
+
+# Utilities - Latest secure versions
+python-dotenv==1.0.1
+aiofiles==24.1.0
+structlog==24.4.0
+jinja2==3.1.6
+
+# Rate limiting & Security
+slowapi==0.1.9
+
+# Testing - Latest secure versions
+pytest==8.3.4
+pytest-asyncio==0.21.2
+httpx==0.28.1
+
+# Development tools - Latest secure versions
+black==24.10.0
+isort==5.13.2
+flake8==7.3.0
+bandit[toml]==1.8.6
+
+# Security tools
+safety==3.7.0
+pip-audit==2.9.0

@@ -1,0 +1,57 @@
+{
+  "scenario": "after_hours_request",
+  "description": "User requests appointment outside business hours, assistant offers alternatives",
+  "expected_flow": [
+    "user_after_hours_request",
+    "assistant_business_hours_info",
+    "assistant_alternative_offer",
+    "user_accepts_alternative",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Lisa and I'd like to book a haircut for tonight at 9 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "I'd love to help you book a haircut, Lisa! However, 9 PM is outside our business hours. We're open Monday-Friday 9 AM to 6 PM, and Saturday 9 AM to 4 PM. Would tomorrow morning at 10 AM work for you instead?",
+      "expected_actions": ["explain_business_hours", "offer_alternative"]
+    },
+    {
+      "role": "user",
+      "content": "Tomorrow at 10 AM sounds perfect."
+    },
+    {
+      "role": "assistant",
+      "content": "Great! Let me confirm: haircut for Lisa tomorrow at 10 AM. Shall I book this appointment?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, book it please."
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! I've booked your haircut appointment. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Lisa",
+          "service": "haircut",
+          "datetime": "tomorrow at 10 AM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_booking": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["booked", "confirmation"],
+    "no_booking_outside_hours": true
+  }
+}

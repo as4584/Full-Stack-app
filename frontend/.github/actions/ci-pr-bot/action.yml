@@ -1,0 +1,21 @@
+name: 'CI PR Bot'
+description: 'Opens a PR with fixes when a build fails'
+inputs:
+  branch:
+    description: 'Branch to fix'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.branch }}
+    
+    - name: Create Fix Branch
+      shell: bash
+      run: |
+        git checkout -b fix/ci-auto-repair-${{ github.run_id }}
+        echo "Applying automated fixes..."
+        # Logic to apply fixes would go here
+        # git push origin fix/ci-auto-repair-${{ github.run_id }}

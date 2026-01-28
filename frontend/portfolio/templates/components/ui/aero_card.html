@@ -1,0 +1,10 @@
+{% macro aero_card(title, content, class="") %}
+<div class="aero-glass {{ class }}" style="padding: 20px;">
+    {% if title %}
+    <h3 class="aero-title" style="font-size: 1.5rem; margin-bottom: 1rem;">{{ title }}</h3>
+    {% endif %}
+    <div class="card-content">
+        {{ content | safe }}
+    </div>
+</div>
+{% endmacro %}

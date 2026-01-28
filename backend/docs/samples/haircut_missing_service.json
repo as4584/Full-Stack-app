@@ -1,0 +1,61 @@
+{
+  "scenario": "haircut_missing_service",
+  "description": "User requests appointment without specifying service type, assistant should clarify",
+  "expected_flow": [
+    "user_vague_service_request",
+    "assistant_service_clarification",
+    "user_specifies_service",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Alex and I'd like to book an appointment for tomorrow at 2 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Alex! I'd be happy to book an appointment for you tomorrow at 2 PM. Could you please let me know what service you'd like - haircut, styling, or trim?",
+      "expected_actions": ["clarify_service_type"]
+    },
+    {
+      "role": "user",
+      "content": "I'd like a haircut please."
+    },
+    {
+      "role": "assistant", 
+      "content": "Perfect! Let me confirm: haircut for Alex tomorrow at 2 PM. Shall I book this appointment?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, that's correct."
+    },
+    {
+      "role": "assistant",
+      "content": "Excellent! I've booked your haircut appointment for tomorrow at 2 PM. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Alex",
+          "service": "haircut",
+          "datetime": "tomorrow at 2 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "must_confirm_before_booking": true,
+    "required_fields": ["customer_name", "service", "datetime"],
+    "expected_final_response": "confirmation",
+    "assistant_expect_contains": ["service", "haircut", "styling", "trim"],
+    "tool_call_expect": {
+      "name": "book_appointment",
+      "customer_name": "Alex",
+      "service": "haircut"
+    }
+  }
+}

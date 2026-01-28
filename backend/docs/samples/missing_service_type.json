@@ -1,0 +1,55 @@
+{
+  "scenario": "missing_service_type",
+  "description": "User requests appointment without specifying service type",
+  "expected_flow": [
+    "user_generic_appointment_request",
+    "assistant_service_clarification",
+    "user_specifies_service",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hello, I'm David and I'd like to book an appointment for tomorrow at 2 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "I'd be happy to help you book an appointment, David! What type of service would you like? We offer haircuts, styling, and beard trims.",
+      "expected_actions": ["clarify_service_type"]
+    },
+    {
+      "role": "user",
+      "content": "I need a haircut and beard trim."
+    },
+    {
+      "role": "assistant",
+      "content": "Excellent! Let me confirm: haircut and beard trim for David tomorrow at 2 PM. Shall I book this appointment?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, that works."
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! I've booked your appointment. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "David",
+          "service": "haircut and beard trim",
+          "datetime": "tomorrow at 2 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_booking": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["booked", "confirmation"]
+  }
+}

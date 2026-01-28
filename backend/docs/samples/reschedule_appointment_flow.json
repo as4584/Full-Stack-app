@@ -1,0 +1,45 @@
+{
+  "scenario": "reschedule_appointment_flow",
+  "description": "User wants to reschedule existing appointment to new time",
+  "expected_flow": [
+    "user_reschedule_request",
+    "assistant_reschedule_confirmation",
+    "user_confirms_new_time",
+    "tool_call_reschedule",
+    "assistant_reschedule_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Rachel. I need to reschedule my haircut from tomorrow at 10 AM to Friday at 2 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help you reschedule your appointment, Rachel. Let me confirm: you want to move your haircut from tomorrow at 10 AM to Friday at 2 PM. Is that correct?",
+      "expected_actions": ["confirm_reschedule"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, that's right."
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! I've rescheduled your haircut appointment to Friday at 2 PM. You'll receive an updated confirmation shortly.",
+      "expected_actions": ["tool_call_reschedule_appointment"],
+      "expected_tool_call": {
+        "name": "reschedule_appointment",
+        "arguments": {
+          "customer_name": "Rachel",
+          "service": "haircut",
+          "old_datetime": "tomorrow at 10 AM",
+          "new_datetime": "Friday at 2 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_rescheduling": true,
+    "tool_call_has_required_args": ["customer_name", "service", "old_datetime", "new_datetime"],
+    "success_message_contains": ["rescheduled", "confirmation"]
+  }
+}

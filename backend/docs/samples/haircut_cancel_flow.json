@@ -1,0 +1,50 @@
+{
+  "scenario": "haircut_cancel_flow",
+  "description": "User requests to cancel existing appointment, assistant confirms cancellation",
+  "expected_flow": [
+    "user_cancel_request",
+    "assistant_cancel_confirmation",
+    "user_confirms_cancel",
+    "tool_call",
+    "assistant_cancel_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm John and I need to cancel my haircut appointment for tomorrow at 3 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help you cancel your appointment, John. Just to confirm, you'd like to cancel your haircut scheduled for tomorrow at 3 PM, is that correct?",
+      "expected_actions": ["confirm_cancellation"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, that's the one."
+    },
+    {
+      "role": "assistant",
+      "content": "I've cancelled your haircut appointment for tomorrow at 3 PM. Is there anything else I can help you with?",
+      "expected_actions": ["tool_call_cancel_appointment"],
+      "expected_tool_call": {
+        "name": "cancel_appointment",
+        "arguments": {
+          "customer_name": "John",
+          "service": "haircut",
+          "datetime": "tomorrow at 3 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "must_confirm_before_booking": true,
+    "required_fields": ["customer_name", "service", "datetime"],
+    "expected_final_response": "cancelled",
+    "assistant_expect_contains": ["cancel", "confirm"],
+    "tool_call_expect": {
+      "name": "cancel_appointment",
+      "customer_name": "John",
+      "service": "haircut"
+    }
+  }
+}

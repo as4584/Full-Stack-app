@@ -1,0 +1,55 @@
+{
+  "scenario": "incomplete_booking_missing_datetime",
+  "description": "User requests haircut but doesn't specify date or time",
+  "expected_flow": [
+    "user_request",
+    "assistant_clarification", 
+    "user_provides_details",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user", 
+      "content": "I'd like to book a haircut."
+    },
+    {
+      "role": "assistant", 
+      "content": "Sure! What date and time do you have in mind?",
+      "expected_actions": ["clarify_datetime"]
+    },
+    {
+      "role": "user",
+      "content": "How about tomorrow at 2pm? My name is John."
+    },
+    {
+      "role": "assistant",
+      "content": "Great! Let me confirm: haircut for John at tomorrow at 2pm. Shall I book this for you?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, book it."
+    },
+    {
+      "role": "assistant", 
+      "content": "Perfect! I've booked your appointment. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "John",
+          "service": "haircut", 
+          "datetime": "tomorrow at 2pm"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_booking": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["booked", "confirmation"]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "scenario": "cancel_appointment_flow",
+  "description": "User wants to cancel existing appointment, assistant confirms before canceling",
+  "expected_flow": [
+    "user_cancel_request",
+    "assistant_cancel_confirmation",
+    "user_confirms_cancel",
+    "tool_call_cancel",
+    "assistant_cancel_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Tom and I need to cancel my haircut appointment for tomorrow at 11 AM."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help you cancel your appointment, Tom. Just to confirm, you want to cancel your haircut appointment scheduled for tomorrow at 11 AM. Is that correct?",
+      "expected_actions": ["confirm_cancellation"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, please cancel it."
+    },
+    {
+      "role": "assistant",
+      "content": "Your appointment has been successfully canceled. You'll receive a cancellation confirmation shortly.",
+      "expected_actions": ["tool_call_cancel_appointment"],
+      "expected_tool_call": {
+        "name": "cancel_appointment",
+        "arguments": {
+          "customer_name": "Tom",
+          "service": "haircut",
+          "datetime": "tomorrow at 11 AM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_canceling": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["canceled", "confirmation"]
+  }
+}

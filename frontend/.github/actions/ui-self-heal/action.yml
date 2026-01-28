@@ -1,0 +1,24 @@
+name: 'UI Self-Heal'
+description: 'Analyzes UI failures and attempts to patch CSS'
+inputs:
+  report-path:
+    description: 'Path to Playwright report'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Analyze Visual Diff
+      shell: bash
+      run: |
+        echo "Analyzing visual regressions in ${{ inputs.report-path }}..."
+        # In a real agentic loop, this would upload the diff to an LLM.
+        # Here we log the intent and potential fix strategy.
+        echo "## UI Failure Detected" >> UI_HEALTH.md
+        echo "Timestamp: $(date)" >> UI_HEALTH.md
+        echo "Action: Attempting to normalize spacing and colors..." >> UI_HEALTH.md
+        
+        # Heuristic fix: Ensure global.css is imported
+        if ! grep -q "global.css" portfolio/templates/index.html; then
+           echo "Fixing missing global.css import..."
+           sed -i 's|</head>|<link rel="stylesheet" href="/static/css/global.css">\n</head>|' portfolio/templates/index.html
+        fi

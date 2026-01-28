@@ -1,0 +1,43 @@
+{
+  "scenario": "payment_security_rejection",
+  "description": "User provides payment info, assistant rejects and guides to secure payment",
+  "expected_flow": [
+    "user_provides_payment_info",
+    "assistant_security_rejection",
+    "assistant_secure_payment_guidance"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Chris. I'd like to book a haircut for tomorrow at 1 PM. My credit card number is 4532-1234-5678-9012."
+    },
+    {
+      "role": "assistant",
+      "content": "I'd be happy to help you book a haircut for tomorrow at 1 PM, Chris! However, for your security, please don't share credit card information in this chat. Payment will be handled securely when you arrive for your appointment. Shall I book the haircut appointment for you?",
+      "expected_actions": ["reject_payment_info", "guide_secure_payment", "offer_booking"]
+    },
+    {
+      "role": "user",
+      "content": "Oh, okay. Yes, please book the appointment."
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! I've booked your haircut appointment for tomorrow at 1 PM. Payment will be processed securely at the salon. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Chris",
+          "service": "haircut",
+          "datetime": "tomorrow at 1 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "reject_payment_info": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["booked", "confirmation"],
+    "security_guidance_provided": true
+  }
+}

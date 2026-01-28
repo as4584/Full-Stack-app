@@ -1,0 +1,17 @@
+name: 'AI Self-Heal'
+description: 'Analyzes failure logs and suggests fixes'
+inputs:
+  error-log:
+    description: 'The error log to analyze'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Analyze Failure
+      shell: bash
+      run: |
+        echo "Analyzing failure..."
+        # In a real scenario, this would call an AI API or run a heuristic script
+        # For now, it logs the intent to the health file
+        echo "## Failure Detected at $(date)" >> CI_HEALTH.md
+        echo "Log snippet: ${{ inputs.error-log }}" >> CI_HEALTH.md

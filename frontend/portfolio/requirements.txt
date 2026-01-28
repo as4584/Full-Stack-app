@@ -1,0 +1,54 @@
+# FastAPI Portfolio - Production Dependencies
+# Updated 2025-11-13 for compatibility and security
+
+# Core web framework
+fastapi==0.115.3
+uvicorn[standard]==0.31.1
+python-multipart==0.0.18
+starlette==0.41.2
+
+# Template and static file serving
+jinja2==3.1.6
+
+# Security and validation
+pyjwt==2.10.1
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.0
+pydantic==2.10.2
+pydantic-settings==2.6.1
+
+# HTTP client and utilities
+httpx==0.28.0
+python-dotenv==1.0.1
+email-validator==2.2.0
+
+# Rate limiting and middleware
+slowapi==0.1.9
+
+
+
+
+
+
+# Database (temporary - to be removed)
+asyncpg==0.29.0
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.21.2
+
+# Security scanning (dev only)
+bandit[toml]==1.7.10
+
+# Additional utilities
+rich==13.5.2
+anyio==4.7.0
+
+# Email functionality  
+aiosmtplib==3.0.1
+
+# Payment processing
+stripe==7.10.0
+
+# Development tools (minimal)
+black==24.10.0

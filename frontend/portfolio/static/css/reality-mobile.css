@@ -1,0 +1,70 @@
+/* 
+  REALITY: MOBILE (< 768px)
+  Goal: Static ambient waterfall, high contrast, minimal UI.
+  Safety: No bubble containers, no desktop assets.
+*/
+
+@media (max-width: 768px) {
+    body.mobile-reality {
+        background: url('/static/images/waterfall_anim.webp') no-repeat center center fixed;
+        background-size: cover;
+        background-attachment: scroll;
+        /* Better performance on mobile */
+        color: #ffffff;
+        position: relative;
+    }
+
+    @keyframes oceanFlow {
+        0% {
+            background-position: 0% 0%;
+        }
+
+        50% {
+            background-position: 0% 100%;
+        }
+
+        100% {
+            background-position: 0% 0%;
+        }
+    }
+
+    /* Hide Desktop Elements strictly */
+    body.mobile-reality #bubble-container,
+    body.mobile-reality .desktop-only,
+    body.mobile-reality .aero-bubbles {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+
+    /* Mobile UI Adjustments */
+    body.mobile-reality .glass-panel {
+        background: rgba(0, 0, 0, 0.6);
+        /* Darker, higher contrast */
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    body.mobile-reality h1,
+    body.mobile-reality h2,
+    body.mobile-reality h3 {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        /* Better readability */
+    }
+
+    body.mobile-reality .nav-links {
+        display: none;
+        /* Often hidden on mobile or collapsable */
+    }
+
+    /* Ensure glass cards have depth but are readable */
+    body.mobile-reality .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+}

@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  ai_receptionist:
+    build: .
+    hostname: ai_receptionist
+    networks:
+      lex_net:
+        aliases:
+          - ai_receptionist
+    env_file:
+      # - /srv/env/global.env
+      - .env
+    environment:
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    restart: unless-stopped
+    ports:
+      - "8015:8015"
+    command: sh -c "pip install aiohttp twilio && uvicorn ai_receptionist.app.main:app --host 0.0.0.0 --port 8015 --workers 4"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8015/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ai_receptionist
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - lex_net
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d ai_receptionist" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    volumes:
+      - redisdata:/data
+    networks:
+      - lex_net
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    volumes:
+      - qdrantdata:/qdrant/storage
+    networks:
+      - lex_net
+    restart: unless-stopped
+    # healthcheck removed due to missing curl
+
+volumes:
+  pgdata:
+  redisdata:
+  qdrantdata:
+
+
+networks:
+  lex_net:
+    external: true

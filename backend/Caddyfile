@@ -1,0 +1,16 @@
+# AI Receptionist Production Caddyfile
+# Both domains point to the same FastAPI app
+
+receptionist.lexmakesit.com {
+    log {
+        output file /var/log/caddy/receptionist_access.log
+    }
+    reverse_proxy ai.internal:8002
+}
+
+api.lexmakesit.com {
+    log {
+        output file /var/log/caddy/api_access.log
+    }
+    reverse_proxy ai.internal:8002
+}

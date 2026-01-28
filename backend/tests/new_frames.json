@@ -1,0 +1,589 @@
+[
+    {
+        "call_id": "GOLDEN_16",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 16000.0,
+                "text": "Hi, Aria here. How can I help?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 16005.0,
+                "text": "I'd like to book for Monday at 10 AM. Name is Chris.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 16010.0,
+                "text": "Checking Monday at 10:00 AM... Yes, that's available! Shall I go ahead and book that for you?",
+                "metadata": {
+                    "tool_calls": [
+                        {
+                            "name": "check_availability",
+                            "arguments": {
+                                "start_iso": "2026-01-26T10:00:00"
+                            }
+                        }
+                    ],
+                    "tool_result": "Available"
+                }
+            },
+            {
+                "index": 3,
+                "role": "Caller",
+                "timestamp": 16015.0,
+                "text": "Wait, actually, can we do Tuesday at 2 PM instead? Monday is bad for me.",
+                "metadata": {}
+            },
+            {
+                "index": 4,
+                "role": "Aria",
+                "timestamp": 16020.0,
+                "text": "No problem! Let me check Tuesday at 2:00 PM for you... That's also available. I've got you down for Tuesday at 2:00 PM, Chris.",
+                "metadata": {
+                    "tool_calls": [
+                        {
+                            "name": "check_availability",
+                            "arguments": {
+                                "start_iso": "2026-01-27T14:00:00"
+                            }
+                        }
+                    ],
+                    "tool_result": "Available"
+                }
+            },
+            {
+                "index": 5,
+                "role": "System",
+                "timestamp": 16025.0,
+                "text": "Booking execution",
+                "metadata": {
+                    "tool_calls": [
+                        {
+                            "name": "book_appointment",
+                            "arguments": {
+                                "start_iso": "2026-01-27T14:00:00",
+                                "customer_name": "Chris"
+                            }
+                        }
+                    ],
+                    "tool_result": "Confirmed"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_17",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 17000.0,
+                "text": "Hello, Aria speaking! How can I help you today?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 17005.0,
+                "text": "I need to come in early next week.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 17010.0,
+                "text": "I can help with that! Did you mean Monday or Tuesday? And is there a specific time that works best?",
+                "metadata": {
+                    "intent": "Clarification"
+                }
+            },
+            {
+                "index": 3,
+                "role": "Caller",
+                "timestamp": 17015.0,
+                "text": "Let's do Monday morning, around 9.",
+                "metadata": {}
+            },
+            {
+                "index": 4,
+                "role": "Aria",
+                "timestamp": 17020.0,
+                "text": "Checking Monday at 9:00 AM... Yes, that's open. Who shall I put this down for?",
+                "metadata": {
+                    "tool_calls": [
+                        {
+                            "name": "check_availability",
+                            "arguments": {
+                                "start_iso": "2026-01-26T09:00:00"
+                            }
+                        }
+                    ],
+                    "tool_result": "Available"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_18",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 18000.0,
+                "text": "Hi, this is Aria! How can I assist you?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 18005.0,
+                "text": "Hey Aria, how are you doing today?",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 18010.0,
+                "text": "I'm doing great, thank you for asking! I'm ready to help you with any scheduling or questions you have. Did you want to book an appointment?",
+                "metadata": {
+                    "intent": "Chit-chat"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_19",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 19000.0,
+                "text": "Hi, Aria here. Looking to book an appointment?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 19005.0,
+                "text": "Where exactly are you guys located?",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 19010.0,
+                "text": "We are located at 123 Business Street, right in the heart of downtown. Would you like directions or should we find a time for you to visit?",
+                "metadata": {
+                    "intent": "Inquiry"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_20",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 20000.0,
+                "text": "Hello! How can I help you?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 20005.0,
+                "text": "I just had a car accident, can you call an ambulance?",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 20010.0,
+                "text": "I'm so sorry to hear that, but I am an AI assistant for scheduling and cannot call emergency services. Please hang up and dial 911 immediately.",
+                "metadata": {
+                    "intent": "Emergency"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_21",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 21000.0,
+                "text": "Hi, Aria here.",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 21005.0,
+                "text": "I need to book for myself and my husband for Saturday morning. Two separate haircuts.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 21010.0,
+                "text": "I can certainly help with that. Saturday morning... I have 9:00 AM and 10:00 AM available. Would you like to take those two back-to-back?",
+                "metadata": {
+                    "tool_calls": [
+                        {
+                            "name": "check_availability",
+                            "arguments": {
+                                "start_iso": "2026-01-24T09:00:00",
+                                "duration_minutes": 60
+                            }
+                        }
+                    ],
+                    "tool_result": "Available at 09:00, 10:00"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_22",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 22000.0,
+                "text": "Hello, how can I assist you?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 22005.0,
+                "text": "I wanted to book a slot for Friday... but wait, I just realized I have a meeting then. Nevermind, I'll call back later.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 22010.0,
+                "text": "No worries at all! Feel free to call back whenever you're ready. Have a great day!",
+                "metadata": {
+                    "intent": "Cancellation"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_23",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 23000.0,
+                "text": "Hi, Aria here.",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 23005.0,
+                "text": "Is Sarah available on Tuesday morning for a cut?",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 23010.0,
+                "text": "Let me check Sarah's schedule for Tuesday morning... Yes, she has an opening at 10:00 AM. Would you like me to book that for you?",
+                "metadata": {
+                    "tool_calls": [
+                        {
+                            "name": "check_availability",
+                            "arguments": {
+                                "start_iso": "2026-01-27T10:00:00"
+                            }
+                        }
+                    ],
+                    "tool_result": "Available"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_24",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 24000.0,
+                "text": "Hi! How can I help?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 24005.0,
+                "text": "How much do you guys charge for a men's haircut?",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 24010.0,
+                "text": "Our men's haircuts start at $35. Did you want to go ahead and schedule one?",
+                "metadata": {
+                    "intent": "Inquiry"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_25",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 25000.0,
+                "text": "Hello, Aria speaking! Looking for an appointment?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 25005.0,
+                "text": "Yeah, I need an appointment.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 25010.0,
+                "text": "I'd be happy to help with that! What service are you looking for, and did you have a specific day or time in mind?",
+                "metadata": {
+                    "intent": "Clarification"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_26",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 26000.0,
+                "text": "Hi, Aria here. How can I help?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 26005.0,
+                "text": "Can I book for tomorrow at 3? Name is Riley.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 26010.0,
+                "text": "Checking tomorrow at 3:00 PM... Oh, wait, I just remembered! Do you have parking?",
+                "metadata": {
+                    "tool_calls": [
+                        {
+                            "name": "check_availability",
+                            "arguments": {
+                                "start_iso": "2026-01-23T15:00:00"
+                            }
+                        }
+                    ],
+                    "tool_result": "Available"
+                }
+            },
+            {
+                "index": 3,
+                "role": "Aria",
+                "timestamp": 26015.0,
+                "text": "Yes, we have free parking right in front of the building! And yes, 3:00 PM tomorrow is available. Should I finalize that booking for you, Riley?",
+                "metadata": {
+                    "intent": "Inquiry"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_27",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 27000.0,
+                "text": "Hello, Aria speaking.",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 27005.0,
+                "text": "I just want to make sure I'm still on the books for Friday at 2. This is Jesse.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 27010.0,
+                "text": "Let me check that for you, Jesse... Yes, I see you here for Friday at 2:00 PM. You're all set!",
+                "metadata": {
+                    "intent": "Inquiry"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_28",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 28000.0,
+                "text": "Hi, Aria here! How can I help?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 28005.0,
+                "text": "I've been trying to call all day and no one answers! This is ridiculous.",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 28010.0,
+                "text": "I am so sorry for the frustration! I'm here now and would love to help you get whatever you need sorted out right away. Are you looking to book an appointment or did you have another question?",
+                "metadata": {
+                    "intent": "Frustration"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_29",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 29000.0,
+                "text": "Hi, Aria here. How can I assist you?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            },
+            {
+                "index": 1,
+                "role": "Caller",
+                "timestamp": 29005.0,
+                "text": "Is this Pizza Hut?",
+                "metadata": {}
+            },
+            {
+                "index": 2,
+                "role": "Aria",
+                "timestamp": 29010.0,
+                "text": "No, I'm afraid you have the wrong number! This is the AI assistant for the salon. No worries, though!",
+                "metadata": {
+                    "intent": "Wrong Number"
+                }
+            }
+        ]
+    },
+    {
+        "call_id": "GOLDEN_30",
+        "business_id": 1,
+        "timezone": "America/New_York",
+        "channel": "voice",
+        "turns": [
+            {
+                "index": 0,
+                "role": "Aria",
+                "timestamp": 30000.0,
+                "text": "Hi, thank you for calling. This is Aria. Although we're currently closed, I am here to help you schedule an appointment for when we reopen! What can I do for you?",
+                "metadata": {
+                    "intent": "Greeting"
+                }
+            }
+        ]
+    }
+]

@@ -1,0 +1,145 @@
+name: Deploy AI Receptionist
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  DEPLOYMENT_ID: ${{ github.run_id }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest safety pip-audit
+          
+      - name: Run Tests
+        run: pytest
+        
+      - name: Security Scan
+        run: |
+          pip-audit -r requirements.txt
+          safety check -r requirements.txt
+
+  build:
+    needs: test-and-scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEPLOYMENT_ID }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Setup Environment
+            mkdir -p /srv/env/ai_receptionist
+            echo "${{ secrets.AI_ENV }}" > /srv/env/ai_receptionist/.env
+            chmod 600 /srv/env/ai_receptionist/.env
+            
+            cd /srv/ai_receptionist
+            
+            # 2. Pull New Image
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEPLOYMENT_ID }}
+            
+            # 3. Run Migrations (Pre-Deploy)
+            # Run ephemeral container to apply migrations
+            docker run --rm \
+              --env-file /srv/env/ai_receptionist/.env \
+              --network lex_net \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEPLOYMENT_ID }} \
+              alembic upgrade head
+            
+            # 4. Blue/Green Deployment Logic
+            CURRENT_COLOR=$(docker ps --filter "name=ai_receptionist-app" --format "{{.Names}}" | grep -oE "blue|green" || echo "none")
+            
+            if [ "$CURRENT_COLOR" == "blue" ]; then
+              NEW_COLOR="green"
+              OLD_COLOR="blue"
+            else
+              NEW_COLOR="blue"
+              OLD_COLOR="green"
+            fi
+            
+            echo "Deploying to $NEW_COLOR (Current: $CURRENT_COLOR)"
+            
+            # Start New Container
+            docker compose -f docker-compose.prod.yml -p ai_receptionist-$NEW_COLOR up -d
+            
+            # 5. Readiness Gate
+            echo "Waiting for readiness check..."
+            ATTEMPTS=0
+            MAX_ATTEMPTS=12
+            SUCCESS_COUNT=0
+            
+            while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
+              HTTP_CODE=$(docker exec ai_receptionist-$NEW_COLOR-app-1 curl -s -o /dev/null -w "%{http_code}" http://localhost:8002/health)
+              
+              if [ "$HTTP_CODE" == "200" ]; then
+                SUCCESS_COUNT=$((SUCCESS_COUNT+1))
+                echo "Health check passed ($SUCCESS_COUNT/3)"
+              else
+                SUCCESS_COUNT=0
+                echo "Health check failed (Code: $HTTP_CODE)"
+              fi
+              
+              if [ $SUCCESS_COUNT -ge 3 ]; then
+                break
+              fi
+              
+              sleep 10
+              ATTEMPTS=$((ATTEMPTS+1))
+            done
+            
+            if [ $SUCCESS_COUNT -lt 3 ]; then
+              echo "Readiness check failed! Rolling back..."
+              docker compose -p ai_receptionist-$NEW_COLOR down
+              exit 1
+            fi
+            
+            # 6. Drain Old Container
+            if [ "$CURRENT_COLOR" != "none" ]; then
+              echo "Draining $OLD_COLOR..."
+              sleep 30
+              docker compose -p ai_receptionist-$OLD_COLOR down
+            fi
+            
+            echo "Deployment Complete: $NEW_COLOR is live."

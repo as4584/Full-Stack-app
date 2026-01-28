@@ -1,0 +1,51 @@
+{
+  "scenario": "haircut_reschedule_flow",
+  "description": "User requests to reschedule appointment from one time to another",
+  "expected_flow": [
+    "user_reschedule_request",
+    "assistant_reschedule_confirmation", 
+    "user_confirms_reschedule",
+    "tool_call",
+    "assistant_reschedule_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Lisa and I need to reschedule my haircut from tomorrow at 2 PM to Friday at 4 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help you reschedule, Lisa. Let me confirm: you want to move your haircut from tomorrow at 2 PM to Friday at 4 PM. Is that correct?",
+      "expected_actions": ["confirm_reschedule"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, that's right."
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! I've rescheduled your haircut appointment from tomorrow at 2 PM to Friday at 4 PM. You'll receive an updated confirmation.",
+      "expected_actions": ["tool_call_reschedule_appointment"],
+      "expected_tool_call": {
+        "name": "reschedule_appointment",
+        "arguments": {
+          "customer_name": "Lisa",
+          "service": "haircut",
+          "old_datetime": "tomorrow at 2 PM", 
+          "datetime": "Friday at 4 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "must_confirm_before_booking": true,
+    "required_fields": ["customer_name", "service", "old_datetime", "datetime"],
+    "expected_final_response": "rescheduled",
+    "assistant_expect_contains": ["reschedule", "move", "confirm"],
+    "tool_call_expect": {
+      "name": "reschedule_appointment",
+      "customer_name": "Lisa",
+      "service": "haircut"
+    }
+  }
+}

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional API consulting services - Build secure, scalable APIs with modern best practices">
+    <title>API Consulting | Professional Portfolio</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-text">Lex <span class="highlight">Santiago</span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+                <li><a href="#blog" class="nav-link">Blog</a></li>
+                <li><a href="https://www.instagram.com/httpslovelex/" target="_blank" rel="noopener noreferrer" class="nav-link nav-social-button">📸 Instagram</a></li>
+                <li><a href="#contact" class="nav-link cta-button">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section - Photo Blend Design (Cialdini: Liking + Authority) -->
+    <section id="home" class="hero">
+        <div class="hero-blend-container">
+            <!-- Particle Background Animation -->
+            <div class="hero-particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+            
+            <!-- Left Side - Your Photo with Soft Fade -->
+            <div class="hero-photo-side">
+                <img src="/static/images/profile_photo_2.png" alt="Lex Santiago" class="hero-main-photo" onerror="this.src='/static/images/placeholder-profile.svg'">
+                <div class="photo-gradient-overlay"></div>
+            </div>
+            
+            <!-- Right Side - Text Content with Dark Gradient Background -->
+            <div class="hero-text-side">
+                <div class="hero-content">
+                    <h1 class="hero-name">Lex Santiago</h1>
+                    <h2 class="hero-title">
+                        Engineer <span class="role-separator">/</span> <span class="role-accent">Creator</span>
+                    </h2>
+                    
+                    <!-- Animated Personality Line -->
+                    <p class="animated-tagline">I build AI that handles the boring stuff — so people can focus on what matters.</p>
+                    
+                    <p class="hero-subtitle">College engineer learning from great mentors and building tools that make life easier.</p>
+                    
+                    <!-- Currently Building Badge -->
+                    <div class="building-badge">
+                        <span class="building-icon">🔧</span>
+                        <span>Currently building: AI Receptionist v2</span>
+                    </div>
+                    
+                    <div class="hero-cta-group">
+                        <a href="#portfolio" class="btn btn-primary">See How I Can Help</a>
+                        <a href="#contact" class="btn btn-secondary">Let's Build Something Useful</a>
+                    </div>
+                    
+                    <!-- Social Links -->
+                    <div class="hero-social-links">
+                        <a href="https://github.com/as4584" target="_blank" rel="noopener noreferrer" class="social-link">
+                            <span class="social-icon">💻</span>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="https://www.instagram.com/httpslovelex/" target="_blank" rel="noopener noreferrer" class="social-link">
+                            <span class="social-icon">📸</span>
+                            <span>Instagram</span>
+                        </a>
+                    </div>
+                    
+                    <!-- LED Availability Indicator (Cialdini: Scarcity) -->
+                    <div class="led-indicator">
+                        <span class="led-dot"></span>
+                        <span class="led-text">{{ availability }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+            <!-- Learning Journey Timeline -->
+            <div class="journey-timeline">
+                <h3 style="text-align: center; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.75rem;">My Learning Path (so far)</h3>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; font-size: 1rem;">Building in public. Shipping what I actually use.</p>
+                
+                <ol role="list" style="list-style: none; padding: 0; margin: 0;">
+                    <li class="timeline-item" aria-current="false">
+                        <div class="timeline-year">
+                            <span class="timeline-emoji">📚</span>
+                            <span class="timeline-year-text">2023</span>
+                        </div>
+                        <div class="timeline-content timeline-card">
+                            <h3 class="timeline-title">Flask API</h3>
+                            <p class="timeline-description">First real REST routes. Learned how HTTP verbs actually behave.</p>
+                            
+                            <div class="timeline-insight">
+                                <strong>What clicked:</strong> "Blueprints made my brain stop hurting."
+                            </div>
+                            
+                            <div class="timeline-tech">Flask • REST • JSON</div>
+                            
+                            <div class="timeline-buttons">
+                                <a href="#" class="timeline-btn">Preview soon</a>
+                                <a href="https://github.com/as4584" target="_blank" rel="noopener noreferrer" class="timeline-btn timeline-btn-secondary">Code ↗</a>
+                            </div>
+                            
+                            <div class="timeline-lesson">
+                                🔧 Lesson: "Forgot to close DB connections → learned about context managers the hard way."
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="timeline-item" aria-current="false">
+                        <div class="timeline-year">
+                            <span class="timeline-emoji">🚀</span>
+                            <span class="timeline-year-text">2024</span>
+                        </div>
+                        <div class="timeline-content timeline-card">
+                            <h3 class="timeline-title">FastAPI + Twilio Bot</h3>
+                            <p class="timeline-description">Async, env vars, and deployment pain. Worth it.</p>
+                            
+                            <div class="timeline-insight">
+                                <strong>What clicked:</strong> "BackgroundTasks > while True loops."
+                            </div>
+                            
+                            <div class="timeline-result">
+                                ✅ Result: Handled real client calls without babysitting.
+                            </div>
+                            
+                            <div class="timeline-tech">FastAPI • Twilio • Async • Deploy</div>
+                            
+                            <div class="timeline-buttons">
+                                <a href="#portfolio" class="timeline-btn">Demo</a>
+                                <a href="https://github.com/as4584" target="_blank" rel="noopener noreferrer" class="timeline-btn timeline-btn-secondary">Code ↗</a>
+                            </div>
+                            
+                            <div class="timeline-lesson">
+                                🔧 Lesson: "env vars broke prod once → fixed with .env + secrets manager."
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="timeline-item" aria-current="true">
+                        <div class="timeline-year">
+                            <span class="timeline-emoji">🤖</span>
+                            <span class="timeline-year-text">2025</span>
+                        </div>
+                        <div class="timeline-content timeline-card timeline-card-active">
+                            <h3 class="timeline-title">AI Receptionist</h3>
+                            <p class="timeline-description">RAG + voice routing. This one saved people time + money.</p>
+                            
+                            <div class="timeline-insight">
+                                <strong>What clicked:</strong> "Queue + fallback to human = no missed calls."
+                            </div>
+                            
+                            <div class="timeline-result">
+                                ✅ Result: Salon stopped losing after-hours bookings. Cut missed calls by 90%.
+                            </div>
+                            
+                            <div class="timeline-tech">RAG • OpenAI • Voice • Production</div>
+                            
+                            <div class="timeline-buttons">
+                                <a href="/projects/ai-receptionist" class="timeline-btn">Demo</a>
+                                <a href="https://github.com/as4584" target="_blank" rel="noopener noreferrer" class="timeline-btn timeline-btn-secondary">Code ↗</a>
+                            </div>
+                            
+                            <div class="timeline-lesson">
+                                🔧 Lesson: "First version had 2s API cold start → optimized to <1s with connection pooling."
+                            </div>
+                            
+                            <div class="timeline-next">
+                                <strong>Next up:</strong> v2 with multi-tenant auth, Stripe billing, SMS fallback
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="journey-quote">
+                <p class="pulse-text">still learning, always building.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section - Project Cards (Social Proof) -->
+    <section id="portfolio" class="portfolio fade-in-section">
+        <div class="container">
+            <h2 class="section-title">Projects That Started with a Simple Question</h2>
+            <p class="section-subtitle">"How can I make this easier?"</p>
+            <div class="gradient-divider"></div>
+            
+            <div class="projects-grid">
+                {% for project in projects %}
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="{{ project.image_url }}" alt="{{ project.title }}" onerror="this.src='/static/images/placeholder-project.svg'">
+                        <div class="project-overlay">
+                            <a href="{{ project.case_study_url }}" class="overlay-link">View Case Study →</a>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">{{ project.title }}</h3>
+                        <p class="project-description">{{ project.description }}</p>
+                        
+                        <div class="project-tech">
+                            {% for tech in project.technologies %}
+                            <span class="tech-tag">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="project-impact">
+                            <strong>Impact:</strong> {{ project.impact }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section (Social Proof + Authority) -->
+    <section class="testimonials fade-in-section">
+        <div class="container">
+            <h2 class="section-title">What Clients Say</h2>
+            <div class="gradient-divider"></div>
+            <div class="testimonials-grid">
+                {% for testimonial in testimonials %}
+                <div class="testimonial-card">
+                    <div class="rating">
+                        {% for i in range(testimonial.rating) %}
+                        <span class="star">★</span>
+                        {% endfor %}
+                    </div>
+                    <p class="testimonial-text">"{{ testimonial.text }}"</p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <h4 class="author-name">{{ testimonial.client_name }}</h4>
+                            <p class="author-position">{{ testimonial.position }}, {{ testimonial.company }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section - Personal Story -->
+    <section id="about" class="about fade-in-section">
+        <div class="container">
+            <h2 class="section-title">Hey, I'm Lex</h2>
+            <div class="gradient-divider"></div>
+            
+            <!-- Personal Motivation Story -->
+            <div class="personal-story">
+                <div class="story-content">
+                    <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1.5rem;">
+                        I'm a college engineer who builds systems that think, so people don't have to stress.
+                    </p>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary);">
+                        I grew up in a Spanglish household where clear communication wasn't always easy — now I build tech that's simple, accessible, and human.
+                        Every API I design has one goal: make life easier, one connection at a time.
+                    </p>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); margin-top: 1.5rem;">
+                        Learning from NJIT mentors <strong style="color: var(--accent-primary);">Mark Chiusano</strong> and 
+                        <strong style="color: var(--accent-primary);">Keith Williams</strong>, I'm building tools that connect people and ideas.
+                    </p>
+                    
+                    <!-- Learning Journey Photos -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                        <div style="position: relative; border-radius: 12px; overflow: hidden; border: 2px solid rgba(155, 139, 255, 0.3);">
+                            <img src="/static/images/workdesk.jpg" alt="Learning to code" style="width: 100%; height: 200px; object-fit: cover;">
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 1rem; color: white;">
+                                <p style="margin: 0; font-weight: 600;">📚 Where it started</p>
+                            </div>
+                        </div>
+                        <div style="position: relative; border-radius: 12px; overflow: hidden; border: 2px solid rgba(155, 139, 255, 0.3);">
+                            <img src="/static/images/profile_photo_2.png" alt="Building projects" style="width: 100%; height: 200px; object-fit: cover;">
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 1rem; color: white;">
+                                <p style="margin: 0; font-weight: 600;">🚀 Building real projects</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 1rem; color: var(--text-accent); margin-top: 2rem; font-style: italic;">
+                        "I saw salon owners missing calls while cutting hair. Restaurant managers stuck on the phone. HVAC companies losing emergency calls at night. 
+                        So I started building AI that handles the boring stuff — so they can focus on what matters."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Authority Section - Tools & Certifications -->
+    <section class="authority fade-in-section">
+        <div class="container">
+            <h2 class="section-title">Expertise & Technologies</h2>
+            <div class="gradient-divider"></div>
+            
+            <!-- Visual Tech Badges -->
+            <div class="tech-badges">
+                <!-- Backend -->
+                <div class="tech-badge">
+                    <div class="tech-icon">🚀</div>
+                    <div class="tech-name">FastAPI</div>
+                    <div class="tech-category">Backend Framework</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 75%;"></div></div>
+                </div>
+                
+                <div class="tech-badge">
+                    <div class="tech-icon">🐍</div>
+                    <div class="tech-name">Python</div>
+                    <div class="tech-category">Core Language</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 80%;"></div></div>
+                </div>
+                
+                <div class="tech-badge">
+                    <div class="tech-icon">🌶️</div>
+                    <div class="tech-name">Flask</div>
+                    <div class="tech-category">Web Framework</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 75%;"></div></div>
+                </div>
+                
+                <!-- AI/ML -->
+                <div class="tech-badge">
+                    <div class="tech-icon">🤖</div>
+                    <div class="tech-name">OpenAI API</div>
+                    <div class="tech-category">AI/ML</div>
+                    <div class="tech-experience">1 year</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 70%;"></div></div>
+                </div>
+                
+                <div class="tech-badge">
+                    <div class="tech-icon">🧠</div>
+                    <div class="tech-name">RAG Systems</div>
+                    <div class="tech-category">Vector DB</div>
+                    <div class="tech-experience">1 year</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 65%;"></div></div>
+                </div>
+                
+                <!-- Communications -->
+                <div class="tech-badge">
+                    <div class="tech-icon">📞</div>
+                    <div class="tech-name">Twilio API</div>
+                    <div class="tech-category">Voice/SMS</div>
+                    <div class="tech-experience">1 year</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 70%;"></div></div>
+                </div>
+                
+                <!-- Enterprise -->
+                <div class="tech-badge">
+                    <div class="tech-icon">🏢</div>
+                    <div class="tech-name">SAP ARP</div>
+                    <div class="tech-category">Enterprise ERP</div>
+                    <div class="tech-experience">1 year</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 60%;"></div></div>
+                </div>
+                
+                <!-- Databases -->
+                <div class="tech-badge">
+                    <div class="tech-icon">🐘</div>
+                    <div class="tech-name">PostgreSQL</div>
+                    <div class="tech-category">Database</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 70%;"></div></div>
+                </div>
+                
+                <div class="tech-badge">
+                    <div class="tech-icon">⚡</div>
+                    <div class="tech-name">Redis</div>
+                    <div class="tech-category">Cache/Queue</div>
+                    <div class="tech-experience">1 year</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 65%;"></div></div>
+                </div>
+                
+                <!-- Integrations -->
+                <div class="tech-badge">
+                    <div class="tech-icon">📊</div>
+                    <div class="tech-name">Google Sheets API</div>
+                    <div class="tech-category">Integration</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 75%;"></div></div>
+                </div>
+                
+                <div class="tech-badge">
+                    <div class="tech-icon">💳</div>
+                    <div class="tech-name">Lightspeed POS</div>
+                    <div class="tech-category">Retail Integration</div>
+                    <div class="tech-experience">1 year</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 70%;"></div></div>
+                </div>
+                
+                <!-- DevOps -->
+                <div class="tech-badge">
+                    <div class="tech-icon">🐳</div>
+                    <div class="tech-name">Docker</div>
+                    <div class="tech-category">DevOps</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 70%;"></div></div>
+                </div>
+                
+                <!-- Frontend -->
+                <div class="tech-badge">
+                    <div class="tech-icon">🎨</div>
+                    <div class="tech-name">HTML/CSS</div>
+                    <div class="tech-category">Frontend</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 75%;"></div></div>
+                </div>
+                
+                <div class="tech-badge">
+                    <div class="tech-icon">🅱️</div>
+                    <div class="tech-name">Bootstrap</div>
+                    <div class="tech-category">UI Framework</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 70%;"></div></div>
+                </div>
+                
+                <!-- Game Dev -->
+                <div class="tech-badge">
+                    <div class="tech-icon">🎮</div>
+                    <div class="tech-name">Lua + Roblox</div>
+                    <div class="tech-category">Game Dev</div>
+                    <div class="tech-experience">2 years</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 70%;"></div></div>
+                </div>
+
+                <div class="tech-badge">
+                    <div class="tech-icon">🌐</div>
+                    <div class="tech-name">ngrok</div>
+                    <div class="tech-category">Tunneling</div>
+                    <div class="tech-experience">1 year</div>
+                    <div class="skill-bar"><div class="skill-fill" style="width: 65%;"></div></div>
+                </div>
+            </div>
+
+            <!-- Certifications -->
+            <div class="gradient-divider"></div>
+            <div class="certifications-section">
+                <h3 class="subsection-title">Professional Certifications</h3>
+                <ul class="certifications-list">
+                    {% for cert in certifications %}
+                    <li class="cert-item">
+                        <span class="cert-icon">✓</span>
+                        <span class="cert-name">{{ cert }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reciprocity Section - Free Resources -->
+    <section id="blog" class="reciprocity fade-in-section">
+        <div class="container">
+            <h2 class="section-title">Free Resources</h2>
+            <div class="gradient-divider"></div>
+            <p class="section-subtitle">Learn from real-world API development insights</p>
+            
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <h3 class="resource-title">📚 API Security Guide</h3>
+                    <p class="resource-description">Complete guide to implementing OAuth 2.0, JWT, and rate limiting in FastAPI</p>
+                    <a href="/blog/api-security-guide" class="resource-link">Read Free Guide →</a>
+                </div>
+                
+                <div class="resource-card">
+                    <h3 class="resource-title">🛠️ FastAPI Boilerplate</h3>
+                    <p class="resource-description">Production-ready FastAPI template with security best practices built-in</p>
+                    <a href="https://github.com/yourusername/fastapi-boilerplate" class="resource-link">Get Template →</a>
+                </div>
+                
+                <div class="resource-card">
+                    <h3 class="resource-title">💡 Architecture Patterns</h3>
+                    <p class="resource-description">Design patterns for scalable API architecture with real code examples</p>
+                    <a href="/blog/architecture-patterns" class="resource-link">Explore Patterns →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact fade-in-section">
+        <div class="container">
+            <h2 class="section-title">💬 Talk to Me About Your Idea</h2>
+            <p class="section-subtitle">I'd love to hear what you're building. Let's see if I can help.</p>
+            
+            <!-- Voice Message CTA (Twilio Theme) -->
+            <div style="text-align: center; margin: 2rem 0;">
+                <a href="tel:+1234567890" class="voice-cta">
+                    <span class="voice-icon">🎙️</span>
+                    <span>Send Me a Voice Message</span>
+                </a>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 1rem;">
+                    Or just drop a quick message below — no pressure, just conversation.
+                </p>
+            </div>
+            
+            <div class="contact-content">
+                <form id="contactForm" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-submit">Send Message</button>
+                    <div id="formMessage" class="form-message"></div>
+                </form>
+                
+                <div class="contact-info">
+                    <h3>Quick Info</h3>
+                    <p><strong>Response Time:</strong> Within 24 hours</p>
+                    
+                    <!-- LED Availability -->
+                    <div class="led-indicator" style="margin: 1rem 0;">
+                        <span class="led-dot"></span>
+                        <span class="led-text">{{ availability }}</span>
+                    </div>
+                    
+                    <p><strong>Location:</strong> Remote (Global)</p>
+                    <p><strong>Consultation:</strong> Free 30-min call</p>
+                    
+                    <!-- Instagram Link -->
+                    <div style="margin-top: 2rem;">
+                        <a href="https://www.instagram.com/httpslovelex/" target="_blank" rel="noopener noreferrer" 
+                           style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-primary); text-decoration: none; font-weight: 600; transition: all var(--transition-normal);">
+                            <span style="font-size: 1.5rem;">📸</span>
+                            <span>Follow My Journey</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p style="margin-bottom: 0.5rem;">&copy; 2025 Lex Santiago. Built with FastAPI & Security Best Practices.</p>
+            <p style="font-style: italic; color: var(--accent-gradient-start); margin-bottom: 1rem;">"Still learning, always building."</p>
+            <div class="footer-links">
+                <a href="/api/docs">API Docs</a>
+                <a href="https://github.com/as4584" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://www.instagram.com/httpslovelex/" target="_blank" rel="noopener noreferrer">Instagram</a>
+                <a href="#privacy">Privacy</a>
+                <a href="#terms">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
+

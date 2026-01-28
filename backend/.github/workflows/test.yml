@@ -1,0 +1,58 @@
+name: Haircut Assistant Eval System Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify offline testing environment
+        run: |
+          echo "TEST_MODE=true" >> $GITHUB_ENV
+          echo "Testing environment configured for offline evaluation"
+
+      - name: Run evaluation tests (quiet mode)
+        run: pytest -q
+
+      - name: Run evaluation tests (verbose mode for debugging)
+        if: failure()
+        run: pytest -v
+
+      - name: Verify all 7 eval scenarios
+        run: |
+          echo "Verifying completion of evaluation scenarios:"
+          echo "1. Ambiguous datetime request"
+          echo "2. After-hours booking request" 
+          echo "3. Missing service type"
+          echo "4. Double booking conflict"
+          echo "5. Cancel appointment flow"
+          echo "6. Reschedule appointment flow"
+          echo "7. Payment security rejection"
+          pytest tests/test_eval_blueprint.py::test_haircut_ambiguous_time_flow -v
+          pytest tests/test_eval_blueprint.py::test_haircut_after_hours_flow -v
+          pytest tests/test_eval_blueprint.py::test_haircut_missing_service_flow -v
+          pytest tests/test_eval_blueprint.py::test_haircut_conflict_propose_alt_flow -v
+          pytest tests/test_eval_blueprint.py::test_haircut_cancel_flow -v
+          pytest tests/test_eval_blueprint.py::test_haircut_reschedule_flow -v
+          pytest tests/test_eval_blueprint.py::test_haircut_payment_refusal_flow -v

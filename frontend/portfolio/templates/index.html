@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexMakesIt AI Receptionist | Smarter 24/7 AI Phone System</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Orbitron:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS System -->
+    <link rel="stylesheet" href="/static/css/global.css?v=3">
+    <link rel="stylesheet" href="/static/css/wallpaper-system.css?v=4">
+    <link rel="stylesheet" href="/static/css/background.css?v=4">
+    <link rel="stylesheet" href="/static/css/glass.css?v=3">
+    <link rel="stylesheet" href="/static/css/buttons.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+
+    <!-- Dual-Reality Layers -->
+    <link rel="stylesheet" href="/static/css/reality-mobile.css?v=3">
+    <link rel="stylesheet" href="/static/css/reality-desktop.css?v=3">
+
+    <!-- JS Bootstrap (Reality Detection) -->
+    <script src="/static/js/detect-reality.js?v=3" defer></script>
+    <script src="/static/js/script.js?v=3" defer></script>
+
+    <!-- Google Site Verification -->
+    <meta name="google-site-verification" content="XyTgSN_hAqz28LiWsUgaO25E8SFXx99VoPwJ3Xam4b8" />
+
+    <!-- Social Sharing / Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lexmakesit.com/">
+    <meta property="og:title" content="LexMakesIt AI Receptionist - Smarter 24/7 Phone System">
+    <meta property="og:description"
+        content="Never miss a lead again. AI-powered phone calls, appointment booking, and real-time dashboard for your business.">
+    <meta property="og:image" content="https://lexmakesit.com/static/images/og-logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://lexmakesit.com/">
+    <meta property="twitter:title" content="LexMakesIt AI Receptionist - Smarter 24/7 Phone System">
+    <meta property="twitter:description"
+        content="Never miss a lead again. AI-powered phone calls, appointment booking, and real-time dashboard for your business.">
+    <meta property="twitter:image" content="https://lexmakesit.com/static/images/og-logo.png">
+</head>
+
+<body class="homepage">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo-text">LexMakesIt AI Receptionist</a>
+            <div class="nav-links">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#portfolio" class="nav-link">Work</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero aero-section">
+        <div class="glass-panel text-center">
+            <div class="gloss-overlay"></div>
+            <h1 style="margin-bottom: 1rem;">LexMakesIt AI Receptionist</h1>
+            <h2 style="font-size: 1.5rem; margin-bottom: 2rem; color: var(--color-ocean-mid);">
+                Smarter 24/7 AI Phone System for Small Business
+            </h2>
+            <p style="margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Building AI that handles the boring stuff.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="#portfolio" class="aero-btn">See My Work</a>
+                <a href="#contact" class="aero-btn"
+                    style="background: transparent; border: 1px solid var(--color-ocean-mid); color: var(--color-navy-text);">Let's
+                    Talk</a>
+            </div>
+
+            <div style="margin-top: 3rem; display: flex; gap: 1.5rem; justify-content: center;">
+                <a href="https://github.com/as4584" target="_blank"
+                    style="font-size: 1.5rem; text-decoration: none;">💻</a>
+                <a href="https://www.instagram.com/httpslovelex/" target="_blank"
+                    style="font-size: 1.5rem; text-decoration: none;">📸</a>
+            </div>
+
+            <div style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--color-ocean-mid);">
+                <span
+                    style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-right: 8px;"></span>
+                {{ availability }}
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 0.5rem; color: var(--color-ocean-mid);">Projects</h2>
+            <p class="text-center" style="margin-bottom: 3rem; color: var(--color-navy-text);">"How can I make this
+                easier?"</p>
+
+            <div class="projects-grid">
+                {% for project in projects %}
+                <div class="glass-card">
+                    <div class="gloss-overlay"></div>
+                    <img src="{{ project.image_url }}" alt="{{ project.title }}" class="project-image"
+                        onerror="this.src='/static/images/placeholder-project.svg'">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">{{ project.title }}</h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1;">{{ project.description }}</p>
+
+                    <div class="tech-tags">
+                        {% for tech in project.technologies %}
+                        <span class="tech-tag">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.1);">
+                        <a href="{{ project.case_study_url }}" class="aero-btn"
+                            style="padding: 8px 20px; font-size: 0.9rem; width: 100%;">
+                            {% if project.case_study_url.startswith('http') %}View Demo{% else %}Case Study{% endif %}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 3rem; color: var(--color-ocean-mid);">What Clients Say</h2>
+            <div class="projects-grid">
+                {% for testimonial in testimonials %}
+                <div class="glass-card">
+                    <div class="gloss-overlay"></div>
+                    <div style="color: #ffd700; margin-bottom: 1rem;">★★★★★</div>
+                    <p style="font-style: italic; margin-bottom: 1.5rem; flex-grow: 1;">"{{ testimonial.text }}"</p>
+                    <div>
+                        <h4 style="font-weight: 700;">{{ testimonial.client_name }}</h4>
+                        <p style="font-size: 0.85rem; color: var(--color-ocean-mid);">{{ testimonial.position }}, {{
+                            testimonial.company }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 2rem; color: var(--color-ocean-mid);">Hey, I'm Lex</h2>
+            <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+                <p style="margin-bottom: 1.5rem;">
+                    I'm a college engineer who builds systems that think, so people don't have to stress.
+                </p>
+                <p style="margin-bottom: 1.5rem;">
+                    I grew up in a Spanglish household where clear communication wasn't always easy — now I build tech
+                    that's simple, accessible, and human.
+                </p>
+                <p>
+                    Learning from NJIT mentors <strong>Mark Chiusano</strong> and <strong>Keith Williams</strong>, I'm
+                    building tools that connect people and ideas.
+                </p>
+            </div>
+
+            <!-- Tech Stack -->
+            <div style="margin-top: 4rem;">
+                <h3 class="text-center" style="margin-bottom: 2rem;">Expertise</h3>
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem;">
+                    <div class="glass-card" style="padding: 1rem; min-width: 120px; align-items: center;">
+                        <div class="gloss-overlay"></div>
+                        <span style="font-size: 2rem; margin-bottom: 0.5rem;">🚀</span>
+                        <span style="font-weight: 600;">FastAPI</span>
+                    </div>
+                    <div class="glass-card" style="padding: 1rem; min-width: 120px; align-items: center;">
+                        <div class="gloss-overlay"></div>
+                        <span style="font-size: 2rem; margin-bottom: 0.5rem;">🐍</span>
+                        <span style="font-weight: 600;">Python</span>
+                    </div>
+                    <div class="glass-card" style="padding: 1rem; min-width: 120px; align-items: center;">
+                        <div class="gloss-overlay"></div>
+                        <span style="font-size: 2rem; margin-bottom: 0.5rem;">🤖</span>
+                        <span style="font-weight: 600;">OpenAI</span>
+                    </div>
+                    <div class="glass-card" style="padding: 1rem; min-width: 120px; align-items: center;">
+                        <div class="gloss-overlay"></div>
+                        <span style="font-size: 2rem; margin-bottom: 0.5rem;">📞</span>
+                        <span style="font-weight: 600;">Twilio</span>
+                    </div>
+                    <div class="glass-card" style="padding: 1rem; min-width: 120px; align-items: center;">
+                        <div class="gloss-overlay"></div>
+                        <span style="font-size: 2rem; margin-bottom: 0.5rem;">🐳</span>
+                        <span style="font-weight: 600;">Docker</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="aero-section">
+        <div class="glass-panel">
+            <div class="gloss-overlay"></div>
+            <h2 class="text-center" style="margin-bottom: 1rem; color: var(--color-ocean-mid);">Let's Talk</h2>
+            <p class="text-center" style="margin-bottom: 3rem;">I'd love to hear what you're building.</p>
+
+            <div style="max-width: 600px; margin: 0 auto;">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" class="form-control" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="aero-btn btn-submit" style="width: 100%;">Send Message</button>
+                </form>
+                <div id="formMessage"
+                    style="margin-top: 1rem; text-align: center; display: none; padding: 10px; border-radius: 5px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-top">
+        <div class="container text-center" style="padding: 3rem 0;">
+            <p style="color: var(--color-navy-text); margin-bottom: 1rem;">&copy; 2026 LexMakesIt AI Receptionist. Built
+                by Lex Santiago.</p>
+            <p style="font-style: italic; color: var(--color-ocean-mid); margin-bottom: 2rem;">"Still learning, always
+                building."</p>
+            <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                <a href="/about" class="nav-link">About</a>
+                <a href="/privacy-policy" class="nav-link">Privacy Policy</a>
+                <a href="/terms" class="nav-link">Terms of Service</a>
+                <a href="/api/docs" class="nav-link">API Docs</a>
+                <a href="https://github.com/as4584" class="nav-link">GitHub</a>
+                <a href="https://www.instagram.com/httpslovelex/" class="nav-link">Instagram</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

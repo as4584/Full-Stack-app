@@ -1,0 +1,86 @@
+/* 
+  REALITY: DESKTOP (>= 768px)
+  Goal: Interactive bubbles, Aero glass, depth.
+  Safety: No GIF background loader.
+*/
+
+/* Base Desktop Styles */
+body.desktop-reality {
+    background: url('/static/images/waterfall_anim.webp') no-repeat center center fixed;
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Bubble Container - Fixed to viewport */
+#bubble-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* Behind content */
+    pointer-events: none;
+    /* Let clicks pass through, JS handles interaction via global listener or specific layer */
+    overflow: hidden;
+}
+
+/* Base Bubble Style */
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%,
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.4) 20%,
+            rgba(255, 255, 255, 0.1) 60%,
+            rgba(255, 255, 255, 0.05) 100%);
+    box-shadow:
+        inset 0 0 20px rgba(255, 255, 255, 0.5),
+        0 0 10px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    will-change: transform, opacity;
+}
+
+/* Shine reflection */
+.bubble::after {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 25%;
+    height: 15%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    transform: rotate(-45deg);
+    filter: blur(1px);
+}
+
+/* Interaction Pop Effect Class */
+.bubble.pop-effect {
+    pointer-events: none;
+    z-index: 0;
+    /* Behind UI */
+}
+
+/* Desktop UI Enhancements */
+body.desktop-reality .glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+}
+
+body.desktop-reality .glass-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.desktop-reality .glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}

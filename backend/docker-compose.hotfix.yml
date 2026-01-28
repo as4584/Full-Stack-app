@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  ai_receptionist_app:
+    volumes:
+      - /home/lex/antigravity_bundle/apps/ai_receptionist_new/ai_receptionist:/app/ai_receptionist
+    command: sh -c "pip install twilio aiohttp && uvicorn ai_receptionist.app.main:app --host 0.0.0.0 --port 8010 --workers 4"

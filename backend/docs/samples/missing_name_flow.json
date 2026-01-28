@@ -1,0 +1,55 @@
+{
+  "scenario": "missing_name_flow",
+  "description": "User provides service and time but no name",
+  "expected_flow": [
+    "user_request_missing_name",
+    "assistant_clarification_name", 
+    "user_provides_name",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user", 
+      "content": "I want a haircut tomorrow at 4pm."
+    },
+    {
+      "role": "assistant", 
+      "content": "I'd be happy to help you book a haircut! What's your name?",
+      "expected_actions": ["clarify_name"]
+    },
+    {
+      "role": "user",
+      "content": "My name is Alex."
+    },
+    {
+      "role": "assistant",
+      "content": "Great! Let me confirm: haircut for Alex at tomorrow at 4pm. Shall I book this for you?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, sounds good."
+    },
+    {
+      "role": "assistant", 
+      "content": "Perfect! I've booked your appointment. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Alex",
+          "service": "haircut", 
+          "datetime": "tomorrow at 4pm"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "confirmation_before_booking": true,
+    "tool_call_has_required_args": ["customer_name", "service", "datetime"],
+    "success_message_contains": ["booked", "confirmation"]
+  }
+}

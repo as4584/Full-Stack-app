@@ -1,0 +1,11 @@
+
+.streamlit/secrets.toml
+# Ignore Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.env
+simulation/
+

@@ -1,0 +1,62 @@
+{
+  "scenario": "haircut_conflict_propose_alt", 
+  "description": "User requests slot that's already booked, assistant detects conflict and proposes alternatives",
+  "expected_flow": [
+    "user_booking_request",
+    "assistant_conflict_detection",
+    "assistant_alternative_offer",
+    "user_accepts_alternative",
+    "assistant_confirmation",
+    "user_confirms",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Emma and I'd like a haircut tomorrow at 2 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "I'd love to help you book a haircut, Emma! Unfortunately, tomorrow at 2 PM is already booked. I have availability at 1 PM or 3 PM tomorrow. Would either of those times work for you?",
+      "expected_actions": ["detect_conflict", "offer_alternatives"]
+    },
+    {
+      "role": "user",
+      "content": "3 PM would be great."
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! Let me confirm: haircut for Emma tomorrow at 3 PM. Shall I book this appointment?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, please."
+    },
+    {
+      "role": "assistant",
+      "content": "Wonderful! I've booked your haircut appointment for tomorrow at 3 PM. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Emma",
+          "service": "haircut",
+          "datetime": "tomorrow at 3 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "must_confirm_before_booking": true,
+    "required_fields": ["customer_name", "service", "datetime"],
+    "expected_final_response": "confirmation",
+    "assistant_expect_contains": ["already booked", "availability", "alternative"],
+    "tool_call_expect": {
+      "name": "book_appointment", 
+      "customer_name": "Emma",
+      "service": "haircut"
+    }
+  }
+}

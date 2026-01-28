@@ -1,0 +1,191 @@
+name: Backend E2E Tests
+
+# ============================================================================
+# BACKEND-ONLY CI PIPELINE
+# ============================================================================
+# This workflow validates backend API correctness WITHOUT frontend dependencies.
+# Tests run against the backend API using direct HTTP requests.
+#
+# MULTI-REPO ARCHITECTURE:
+# - This CI is ONLY for the backend repository
+# - Frontend has its own separate CI pipeline
+# - Backend is the source of truth for API behavior
+#
+# TRIGGERS:
+# - Every pull request to main/master
+# - Every push to main/master
+# - Manual dispatch for testing
+#
+# FAILURE POLICY:
+# - ANY non-zero exit code BLOCKS the merge
+# - NO silent failures
+# - Clear error messages on failure
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  backend-e2e-tests:
+    name: Backend API E2E Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Backend Code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install Backend Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests bcrypt
+          echo "✅ Backend dependencies installed"
+      
+      # ========================================================================
+      # FULL E2E TESTS (Thorough validation)
+      # ========================================================================
+      
+      - name: Run Settings E2E Test
+        env:
+          API_URL: ${{ secrets.PROD_API_URL || 'https://receptionist.lexmakesit.com' }}
+        run: |
+          echo "Testing settings persistence API..."
+          python3 test_settings_e2e.py --url "$API_URL"
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "::error::❌ Settings API test failed (exit $EXIT_CODE)"
+            echo "Settings persistence is BROKEN - blocking merge"
+            exit $EXIT_CODE
+          fi
+          echo "✅ Settings API test passed"
+      
+      - name: Run Calendar E2E Test
+        env:
+          API_URL: ${{ secrets.PROD_API_URL || 'https://receptionist.lexmakesit.com' }}
+        run: |
+          echo "Testing calendar integration API..."
+          python3 test_calendar_e2e.py --url "$API_URL"
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "::error::❌ Calendar API test failed (exit $EXIT_CODE)"
+            echo "Calendar integration is BROKEN - blocking merge"
+            exit $EXIT_CODE
+          fi
+          echo "✅ Calendar API test passed"
+      
+      - name: Run Twilio E2E Test
+        env:
+          API_URL: ${{ secrets.PROD_API_URL || 'https://receptionist.lexmakesit.com' }}
+        run: |
+          echo "Testing Twilio phone integration API..."
+          python3 test_twilio_e2e.py --url "$API_URL"
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "::error::❌ Twilio API test failed (exit $EXIT_CODE)"
+            echo "Phone integration is BROKEN - blocking merge"
+            exit $EXIT_CODE
+          fi
+          echo "✅ Twilio API test passed"
+      
+      # ========================================================================
+      # SMOKE TESTS (Fast verification on PRs)
+      # ========================================================================
+      
+      - name: Run Smoke Tests (PR Fast Path)
+        if: github.event_name == 'pull_request'
+        env:
+          SMOKE_TEST: "true"
+          API_URL: ${{ secrets.PROD_API_URL || 'https://receptionist.lexmakesit.com' }}
+        run: |
+          echo "Running smoke tests (fast API verification)..."
+          
+          # Run all smoke tests in parallel for speed
+          python3 test_settings_e2e.py --url "$API_URL" &
+          PID_SETTINGS=$!
+          
+          python3 test_calendar_e2e.py --url "$API_URL" &
+          PID_CALENDAR=$!
+          
+          python3 test_twilio_e2e.py --url "$API_URL" &
+          PID_TWILIO=$!
+          
+          # Wait for all and collect exit codes
+          wait $PID_SETTINGS
+          EXIT_SETTINGS=$?
+          wait $PID_CALENDAR
+          EXIT_CALENDAR=$?
+          wait $PID_TWILIO
+          EXIT_TWILIO=$?
+          
+          # Report individual results
+          echo "Settings smoke: exit $EXIT_SETTINGS"
+          echo "Calendar smoke: exit $EXIT_CALENDAR"
+          echo "Twilio smoke: exit $EXIT_TWILIO"
+          
+          # Fail if ANY test failed
+          if [ $EXIT_SETTINGS -ne 0 ] || [ $EXIT_CALENDAR -ne 0 ] || [ $EXIT_TWILIO -ne 0 ]; then
+            echo "::error::❌ One or more smoke tests failed - blocking merge"
+            echo "Backend API has regressions - cannot merge"
+            exit 1
+          fi
+          
+          echo "✅ All smoke tests passed (API healthy)"
+      
+      # ========================================================================
+      # TEST SUMMARY
+      # ========================================================================
+      
+      - name: Backend API Test Summary
+        if: always()
+        run: |
+          echo "## Backend API Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Tests Executed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Settings Persistence API" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Calendar Integration API" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Twilio Phone API" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note**: This CI validates backend API correctness only." >> $GITHUB_STEP_SUMMARY
+          echo "Frontend has separate CI in its own repository." >> $GITHUB_STEP_SUMMARY
+
+# ============================================================================
+# IMPORTANT NOTES FOR MAINTAINERS
+# ============================================================================
+#
+# 1. BACKEND-ONLY TESTING
+#    - These tests validate API behavior via HTTP requests
+#    - No frontend code is built or deployed
+#    - No browser automation
+#    - Pure API validation
+#
+# 2. EXIT CODE DISCIPLINE
+#    - Exit 0 = API works correctly
+#    - Exit 1-5 = Specific API failure
+#    - Non-zero ALWAYS blocks merge
+#
+# 3. SMOKE VS FULL TESTS
+#    - Full tests: Thorough validation (~30s)
+#    - Smoke tests: Fast verification (<10s)
+#    - Both enforce same correctness guarantees
+#
+# 4. MULTI-REPO CONSIDERATIONS
+#    - Frontend repo has its own CI
+#    - Backend CI does NOT depend on frontend
+#    - Backend is source of truth for API contracts
+#
+# 5. ADDING NEW TESTS
+#    - Create test_<feature>_e2e.py in backend/
+#    - Add SMOKE_TEST support
+#    - Use consistent exit codes (0=pass, 1-5=fail)
+#    - Add step to this workflow
+#
+# ============================================================================

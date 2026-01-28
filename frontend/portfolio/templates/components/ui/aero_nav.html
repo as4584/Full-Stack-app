@@ -1,0 +1,15 @@
+{% macro aero_nav(links) %}
+<nav class="aero-glass"
+    style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1000px; z-index: 1000; padding: 10px 30px; border-radius: 50px; display: flex; justify-content: space-between; align-items: center;">
+    <div class="logo">
+        <span class="aero-title" style="font-size: 1.5rem;">lex<span style="color: #00e5ff;">makesit</span></span>
+    </div>
+    <ul style="display: flex; gap: 20px; list-style: none; margin: 0; padding: 0;">
+        {% for link in links %}
+        <li><a href="{{ link.href }}"
+                style="color: #004d40; text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; transition: color 0.3s;">{{
+                link.text }}</a></li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endmacro %}

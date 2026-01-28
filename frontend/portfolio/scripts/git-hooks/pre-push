@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Git pre-push hook
+# This hook is called by git push after it has checked the remote status,
+# but before anything has been pushed.
+
+echo "🔒 Running pre-push validation..."
+
+# Run our comprehensive check
+if ! ./scripts/pre-push-check.sh; then
+    echo ""
+    echo "❌ PUSH BLOCKED: Fix the errors above before pushing!"
+    echo "💡 Run './scripts/pre-push-check.sh' to see detailed errors"
+    exit 1
+fi
+
+echo "✅ Pre-push validation passed! Continuing with push..."
+exit 0

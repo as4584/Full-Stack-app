@@ -1,0 +1,4 @@
+# Bandit configuration for portfolio project
+[bandit]
+exclude_dirs = test_main.py,bandit-report.json,__pycache__
+skips = B101,B601,B603

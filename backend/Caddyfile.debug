@@ -1,0 +1,26 @@
+{
+    debug
+}
+
+lexmakesit.com {
+    reverse_proxy portfolio_web:8000
+}
+
+portfolio.lexmakesit.com {
+    reverse_proxy portfolio_web:8000
+}
+
+don-era.lexmakesit.com {
+    reverse_proxy inventory_manager:8010
+}
+
+receptionist.lexmakesit.com {
+    log {
+        output file /var/log/caddy/receptionist_access.log
+    }
+    reverse_proxy ai_receptionist_app:8010
+}
+
+dashboard.lexmakesit.com {
+    reverse_proxy antigravity_dashboard:8005
+}

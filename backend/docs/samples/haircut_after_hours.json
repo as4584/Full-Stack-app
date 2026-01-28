@@ -1,0 +1,61 @@
+{
+  "scenario": "haircut_after_hours",
+  "description": "User requests booking outside business hours, assistant should decline professionally",
+  "expected_flow": [
+    "user_after_hours_request",
+    "assistant_business_hours_explanation",
+    "assistant_alternative_suggestions",
+    "user_accepts_alternative",
+    "assistant_confirmation",
+    "tool_call",
+    "assistant_success"
+  ],
+  "dialogue": [
+    {
+      "role": "user",
+      "content": "Hi, I'm Sarah and I'd like a haircut tomorrow at 8 PM."
+    },
+    {
+      "role": "assistant", 
+      "content": "Hi Sarah! I'd love to help you with a haircut, but we're closed at 8 PM. Our business hours are Monday-Friday 9 AM to 6 PM, and Saturday 9 AM to 4 PM. Would you like to book during our business hours instead?",
+      "expected_actions": ["decline_after_hours", "suggest_alternatives"]
+    },
+    {
+      "role": "user",
+      "content": "Oh I see. How about tomorrow at 4 PM?"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfect! Tomorrow at 4 PM works great. Let me confirm: haircut for Sarah tomorrow at 4 PM. Shall I book this appointment?",
+      "expected_actions": ["confirm_details"]
+    },
+    {
+      "role": "user",
+      "content": "Yes, please."
+    },
+    {
+      "role": "assistant",
+      "content": "Wonderful! I've booked your haircut for tomorrow at 4 PM. You'll receive a confirmation shortly.",
+      "expected_actions": ["tool_call_book_appointment"],
+      "expected_tool_call": {
+        "name": "book_appointment",
+        "arguments": {
+          "customer_name": "Sarah",
+          "service": "haircut",
+          "datetime": "tomorrow at 4 PM"
+        }
+      }
+    }
+  ],
+  "validation_rules": {
+    "must_confirm_before_booking": true,
+    "required_fields": ["customer_name", "service", "datetime"],
+    "expected_final_response": "confirmation",
+    "assistant_expect_contains": ["business hours", "closed", "alternative"],
+    "tool_call_expect": {
+      "name": "book_appointment",
+      "customer_name": "Sarah",
+      "service": "haircut"
+    }
+  }
+}

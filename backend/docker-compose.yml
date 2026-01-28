@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    hostname: ai.internal
+    networks:
+      - lex_net
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8002:8002"
+    command: uvicorn ai_receptionist.app.main:app --host 0.0.0.0 --port 8002 --workers 4
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8002/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ai_receptionist
+      POSTGRES_USER: ${POSTGRES_USER:-ai_receptionist_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_pg_password_2024}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - lex_net
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ai_receptionist_user} -d ai_receptionist" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    volumes:
+      - redisdata:/data
+    networks:
+      - lex_net
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    volumes:
+      - qdrantdata:/qdrant/storage
+    networks:
+      - lex_net
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:6333/readyz" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata:
+  redisdata:
+  qdrantdata:
+
+networks:
+  lex_net:
+    external: true

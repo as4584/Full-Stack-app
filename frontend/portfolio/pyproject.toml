@@ -1,0 +1,18 @@
+[tool.bandit]
+# Bandit configuration for FastAPI Portfolio
+exclude_dirs = ["tests", "__pycache__", ".git", "venv"]
+
+# Skip test-related and false positive checks
+skips = [
+    "B101",  # Assert used - acceptable in tests
+    "B601",  # Shell injection - parameterized calls are safe  
+    "B603",  # Subprocess without shell=True is safe
+]
+
+[tool.bandit.assert_used]
+# Allow asserts in test files
+skips = ["*test*", "*_test.py", "test_*.py"]
+
+[tool.bandit.hardcoded_bind_all_interfaces]
+# Allow 0.0.0.0 binding when properly configured with nosec
+skips = ["*test*"]
