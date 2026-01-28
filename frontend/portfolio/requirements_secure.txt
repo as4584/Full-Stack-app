@@ -7,7 +7,7 @@ fastapi==0.115.3
 uvicorn[standard]==0.32.1
 
 # Security & Authentication - Latest secure versions  
-python-jose[cryptography]==3.4.0
+pyjwt[crypto]==2.10.1
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.1
 
@@ -19,7 +19,7 @@ email-validator==2.2.0
 # HTTP & Networking - Latest secure versions
 httpx==0.28.1
 aiosmtplib==3.0.1
-python-multipart==0.0.18
+python-multipart==0.0.22
 
 # Database - Latest secure versions
 asyncpg==0.29.0

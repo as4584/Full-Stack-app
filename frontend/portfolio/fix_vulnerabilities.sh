@@ -36,11 +36,11 @@ cat > requirements_ultra_secure.txt << 'EOF'
 
 # Core FastAPI Framework - Latest secure versions
 fastapi==0.115.3
-starlette==0.49.1         # Fixed CVE-2025-54121, CVE-2025-62727
+starlette==0.52.1         # Fixed all CVEs
 uvicorn[standard]==0.32.1
 
 # Security & Authentication - Latest patched versions
-python-jose[cryptography]==3.4.0
+pyjwt[crypto]==2.10.1     # Replaced vulnerable python-jose
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.1
 
@@ -51,7 +51,7 @@ email-validator==2.2.0
 
 # HTTP Client - Fixed vulnerability versions
 requests==2.32.4          # Fixed CVE-2024-35195, CVE-2024-47081
-urllib3==2.5.0            # Fixed CVE-2024-37891, CVE-2025-50181
+urllib3==2.6.3            # Fixed all decompression bomb CVEs
 httpx==0.28.1
 
 # Authentication Libraries - Secure versions

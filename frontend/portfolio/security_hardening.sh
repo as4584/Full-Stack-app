@@ -51,7 +51,7 @@ fastapi==0.115.3
 uvicorn[standard]==0.32.1
 
 # Security & Authentication - Latest secure versions  
-python-jose[cryptography]==3.4.0
+pyjwt[crypto]==2.10.1     # Replaced vulnerable python-jose
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.1
 

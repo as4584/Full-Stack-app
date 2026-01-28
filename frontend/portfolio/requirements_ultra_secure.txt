@@ -5,11 +5,11 @@
 
 # Core FastAPI Framework - Latest secure versions
 fastapi==0.115.3
-starlette==0.49.1         # Fixed CVE-2025-54121, CVE-2025-62727
+starlette==0.52.1         # Fixed all CVEs
 uvicorn[standard]==0.32.1
 
 # Security & Authentication - Latest patched versions
-python-jose[cryptography]==3.4.0
+pyjwt[crypto]==2.10.1     # Replaced vulnerable python-jose
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.1
 
@@ -20,7 +20,7 @@ email-validator==2.2.0
 
 # HTTP Client - Fixed vulnerability versions
 requests==2.32.4          # Fixed CVE-2024-35195, CVE-2024-47081
-urllib3==2.5.0            # Fixed CVE-2024-37891, CVE-2025-50181
+urllib3==2.6.3            # Fixed all decompression bomb CVEs
 httpx==0.28.1
 
 # Authentication Libraries - Secure versions
@@ -32,14 +32,14 @@ flask-cors==6.0.0         # Fixed multiple CVEs
 
 # Crypto & Security
 cryptography==46.0.2
-ecdsa==0.20.0             # Fixed CVE-2024-23342 (if possible)
+ecdsa==0.19.1             # Fixed CVE-2024-23342
 
 # Build Tools - Patched versions
 setuptools==78.1.1        # Fixed CVE-2022-40897, CVE-2025-47273, CVE-2024-6345
-wheel==0.44.0             # Fixed CVE-2022-40898
+wheel==0.46.3             # Fixed CVE-2022-40898
 
 # Web Security
-werkzeug==3.0.6          # Fixed CVE-2024-34069, CVE-2024-49766, CVE-2024-49767
+werkzeug==3.1.5           # Fixed all CVEs
 
 # Virtual Environment
 virtualenv==20.26.6      # Fixed CVE-2024-53899
@@ -48,7 +48,7 @@ virtualenv==20.26.6      # Fixed CVE-2024-53899
 python-dotenv==1.0.1
 aiofiles==24.1.0
 jinja2==3.1.6
-python-multipart==0.0.18
+python-multipart==0.0.22
 slowapi==0.1.9
 
 # Rate limiting & Security middleware

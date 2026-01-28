@@ -231,7 +231,7 @@ def step5_verify_session(db, token):
     logger.info("[STEP 5] Verifying session...")
     
     # Decode token to verify it contains correct data
-    from jose import jwt
+    import jwt  # Using PyJWT instead of deprecated python-jose
     
     try:
         settings = get_settings()
