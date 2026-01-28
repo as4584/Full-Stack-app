@@ -1,1 +1,11 @@
-# Shared CI Standards Dependencies\n\n# HTTP and async requests\naiohttp>=3.8.0\nrequests>=2.28.0\n\n# System utilities\npsutil>=5.9.0\n\n# Testing and validation\npytest>=7.0.0\n
+# Shared CI Standards Dependencies
+
+# HTTP and async requests
+aiohttp>=3.13.3
+requests>=2.32.4
+
+# System utilities
+psutil>=5.9.0
+
+# Testing and validation
+pytest>=8.0.0
