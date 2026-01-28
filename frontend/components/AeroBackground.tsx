@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import './aero-background.css';
+import '../app/aero-background.css';
 
 interface Bubble {
   id: number;
