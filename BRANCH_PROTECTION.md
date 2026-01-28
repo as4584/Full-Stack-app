@@ -1,33 +1,28 @@
 # 🔒 Branch Protection Setup Guide
 
-To prevent pushing to `main` unless CI passes, follow these steps:
+Your CI is now passing! ✅ To prevent pushing to `main` unless CI passes:
 
 ## GitHub Repository Settings
 
-1. **Go to your repository**: https://github.com/as4584/Full-Stack-app
+1. **Go to your repository**: https://github.com/as4584/Full-Stack-app/settings/branches
 
-2. **Navigate to Settings** → **Branches**
+2. **Click "Add branch protection rule"**
 
-3. **Add Branch Protection Rule**:
+3. **Configure the rule**:
    - Branch name pattern: `main`
 
 4. **Enable these protections**:
    
    ✅ **Require a pull request before merging**
    - Require approvals: 0 (or 1 if you want code review)
-   - Dismiss stale pull request approvals when new commits are pushed
    
    ✅ **Require status checks to pass before merging**
-   - Require branches to be up to date before merging
-   - **Required status checks** (add these):
-     - `✅ CI Success` (the summary job)
-     - `🐍 Backend Lint & Type Check`
-     - `⚛️ Frontend Lint & Build`
-     - `🔒 Security Scan`
+   - Search and add: `✅ CI Success`
+   - This single check gates all other checks!
    
    ✅ **Do not allow bypassing the above settings**
 
-5. **Click "Create"** or "Save changes"
+5. **Click "Create"**
 
 ## What This Does
 
