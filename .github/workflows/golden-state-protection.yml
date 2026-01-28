@@ -1,0 +1,146 @@
+name: Golden State Protection
+
+on:
+  push:
+    branches: [main, production]
+    paths:
+      - 'frontend/**'
+      - 'auth-frontend/**'
+  pull_request:
+    branches: [main, production]
+
+jobs:
+  validate-critical-flows:
+    name: Critical User Flow Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+      
+      - name: Run critical flow tests
+        run: |
+          python3 test_golden_state.py
+        env:
+          PRODUCTION_URL: https://lexmakesit.com
+          AUTH_URL: https://auth.lexmakesit.com
+          API_URL: https://receptionist.lexmakesit.com
+      
+      - name: Block deployment on failure
+        if: failure()
+        run: |
+          echo "❌ CRITICAL: User flows are broken!"
+          echo "Deployment blocked to protect customers"
+          exit 1
+
+  prevent-502-errors:
+    name: 502 Error Prevention
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+      
+      - name: Check for 502 errors
+        run: |
+          python3 test_production_health.py
+        continue-on-error: false
+      
+      - name: Block on 502 detection
+        if: failure()
+        run: |
+          echo "🚫 502 Error detected - deployment BLOCKED"
+          echo "Fix the error before merging"
+          exit 1
+
+  safe-deploy:
+    name: Deploy with Auto-Rollback
+    needs: [validate-critical-flows, prevent-502-errors]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.PRODUCTION_SERVER }} >> ~/.ssh/known_hosts
+      
+      - name: Deploy with rollback protection
+        run: |
+          chmod +x scripts/safe_deploy.sh
+          ./scripts/safe_deploy.sh all
+        env:
+          SERVER: ${{ secrets.PRODUCTION_SERVER }}
+      
+      - name: Verify deployment
+        run: |
+          sleep 10
+          python3 test_golden_state.py
+      
+      - name: Create golden state on success
+        if: success()
+        run: |
+          chmod +x scripts/create_golden_state.sh
+          ./scripts/create_golden_state.sh
+      
+      - name: Notify on failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            ❌ Deployment failed and was automatically rolled back
+            System is stable at previous golden state
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  continuous-monitoring:
+    name: Monitor Production Health
+    needs: [safe-deploy]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests
+      
+      - name: Monitor for 5 minutes
+        run: |
+          for i in {1..10}; do
+            echo "Health check $i/10..."
+            python3 test_golden_state.py || exit 1
+            sleep 30
+          done
+      
+      - name: Auto-rollback on sustained failure
+        if: failure()
+        run: |
+          echo "🚨 Sustained failure detected - triggering rollback"
+          ssh ${{ secrets.PRODUCTION_SERVER }} 'bash /opt/ai-receptionist/golden-state-backups/latest/restore.sh'
