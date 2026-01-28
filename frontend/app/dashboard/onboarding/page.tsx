@@ -396,7 +396,7 @@ export default function OnboardingPage() {
                                 />
                                 <button
                                     type="button"
-                                    onClick={handleSearchNumbers}
+                                    onClick={() => handleSearchNumbers()}
                                     style={{ padding: '0 1.5rem', background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '10px' }}
                                 >
                                     Search
