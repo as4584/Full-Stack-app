@@ -69,11 +69,23 @@ export default function OnboardingPage() {
         }
     }, [currentStep, availableNumbers.length]);
 
-    const handleSearchNumbers = async () => {
+    const handleSearchNumbers = async (overrideAreaCode?: string) => {
+        const searchAreaCode = overrideAreaCode ?? areaCode;
         setLoadingNumbers(true);
         setError('');
         try {
-            const numbers = await searchNumbers(areaCode);
+            let numbers = await searchNumbers(searchAreaCode);
+            
+            // Auto-fallback: If area code specified but no results, try without area code
+            if (numbers.length === 0 && searchAreaCode) {
+                console.log('No numbers for area code, trying fallback...');
+                const fallback = await searchNumbers('');
+                if (fallback.length > 0) {
+                    numbers = fallback;
+                    // Don't show error - we found alternatives
+                }
+            }
+            
             setAvailableNumbers(numbers);
             if (numbers.length > 0) {
                 setSelectedNumber(numbers[0].phoneNumber);
@@ -427,10 +439,36 @@ export default function OnboardingPage() {
                                             </option>
                                         ))}
                                     </select>
-                                    {availableNumbers.length === 0 && (
-                                        <p style={{ color: '#718096', fontSize: '0.9rem', marginTop: '1rem' }}>
-                                            No numbers found for this area code. Try another or leave blank.
-                                        </p>
+                                    {availableNumbers.length === 0 && !loadingNumbers && (
+                                        <div style={{ 
+                                            padding: '1rem', 
+                                            background: '#fffbeb', 
+                                            borderRadius: '10px', 
+                                            border: '1px solid #fcd34d',
+                                            marginTop: '1rem'
+                                        }}>
+                                            <p style={{ color: '#92400e', fontSize: '0.9rem', marginBottom: '0.75rem' }}>
+                                                <strong>No numbers found for this area code.</strong>
+                                            </p>
+                                            <p style={{ color: '#78716c', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                                                Some area codes may have limited availability. Try:
+                                            </p>
+                                            <button 
+                                                type="button"
+                                                onClick={() => { setAreaCode(''); handleSearchNumbers(); }}
+                                                style={{
+                                                    background: '#3d84ff',
+                                                    color: 'white',
+                                                    padding: '0.5rem 1rem',
+                                                    borderRadius: '8px',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.85rem'
+                                                }}
+                                            >
+                                                🔍 Show Any Available Number
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             )}
