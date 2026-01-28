@@ -2,6 +2,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import AeroBackground from '@/components/AeroBackground'
 
 export const metadata: Metadata = {
     title: 'AI Receptionist Dashboard',
@@ -21,6 +22,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
+                <AeroBackground />
                 {children}
                 
                 {/* White screen failsafe - last resort fallback */}

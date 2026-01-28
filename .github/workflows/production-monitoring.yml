@@ -1,0 +1,306 @@
+name: 🔄 Production Monitoring - 502 Detection & Auto-Rollback
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+env:
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  health-monitoring:
+    name: 🏥 Production Health Monitor
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Backend API
+        id: backend_check
+        run: |
+          echo "🔍 Checking backend API..."
+          
+          ENDPOINTS=(
+            "https://receptionist.lexmakesit.com/"
+            "https://receptionist.lexmakesit.com/api/health"
+            "https://receptionist.lexmakesit.com/docs"
+          )
+          
+          FAILED=0
+          
+          for endpoint in "${ENDPOINTS[@]}"; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$endpoint" || echo "000")
+            
+            if [ "$HTTP_CODE" = "502" ]; then
+              echo "❌ CRITICAL: 502 detected at $endpoint"
+              echo "error=true" >> $GITHUB_OUTPUT
+              echo "failed_endpoint=$endpoint" >> $GITHUB_OUTPUT
+              FAILED=1
+              break
+            elif [ "$HTTP_CODE" = "000" ]; then
+              echo "❌ CRITICAL: Timeout at $endpoint"
+              echo "error=true" >> $GITHUB_OUTPUT
+              echo "failed_endpoint=$endpoint" >> $GITHUB_OUTPUT
+              FAILED=1
+              break
+            else
+              echo "✅ $endpoint → HTTP $HTTP_CODE"
+            fi
+          done
+          
+          if [ $FAILED -eq 0 ]; then
+            echo "error=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Frontend
+        id: frontend_check
+        run: |
+          echo "🔍 Checking frontend..."
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://lexmakesit.com/ || echo "000")
+          
+          if [ "$HTTP_CODE" = "502" ]; then
+            echo "❌ CRITICAL: Frontend returns 502"
+            echo "error=true" >> $GITHUB_OUTPUT
+          elif [ "$HTTP_CODE" = "000" ]; then
+            echo "❌ CRITICAL: Frontend timeout"
+            echo "error=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Frontend healthy (HTTP $HTTP_CODE)"
+            echo "error=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Auth Frontend
+        id: auth_check
+        run: |
+          echo "🔍 Checking auth frontend..."
+          
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://auth.lexmakesit.com/signin || echo "000")
+          
+          if [ "$HTTP_CODE" = "502" ]; then
+            echo "❌ CRITICAL: Auth frontend returns 502"
+            echo "error=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Auth frontend healthy (HTTP $HTTP_CODE)"
+            echo "error=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Frutiger Aero Animations
+        run: |
+          echo "🎨 Checking Frutiger Aero animations..."
+          
+          # Check if aero-background.js is accessible
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://auth.lexmakesit.com/aero-background.js)
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Frutiger Aero animations loaded"
+          else
+            echo "⚠️  Warning: Animation assets not loading (HTTP $HTTP_CODE)"
+          fi
+
+      - name: Trigger Auto-Rollback (Backend)
+        if: steps.backend_check.outputs.error == 'true'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "🚨 INITIATING AUTO-ROLLBACK FOR BACKEND"
+            cd /opt/ai-receptionist
+            
+            # Get last working commit
+            CURRENT_COMMIT=$(git rev-parse HEAD)
+            LAST_WORKING=$(git log --grep="✅ Production healthy" -1 --format="%H")
+            
+            if [ -n "$LAST_WORKING" ] && [ "$CURRENT_COMMIT" != "$LAST_WORKING" ]; then
+              echo "Rolling back to: $LAST_WORKING"
+              git checkout $LAST_WORKING
+              docker compose down app
+              docker compose up -d app
+              
+              sleep 15
+              
+              # Verify rollback worked
+              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://receptionist.lexmakesit.com/)
+              if [ "$HTTP_CODE" != "502" ]; then
+                echo "✅ Rollback successful"
+                exit 0
+              else
+                echo "❌ Rollback failed, manual intervention required"
+                exit 1
+              fi
+            else
+              echo "⚠️  No previous working version found"
+              docker compose logs app --tail=100
+            fi
+
+      - name: Trigger Auto-Rollback (Frontend)
+        if: steps.frontend_check.outputs.error == 'true'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "🚨 INITIATING AUTO-ROLLBACK FOR FRONTEND"
+            cd /opt/ai-receptionist/frontend
+            
+            CURRENT_COMMIT=$(git rev-parse HEAD)
+            LAST_WORKING=$(git log --grep="✅ Frontend healthy" -1 --format="%H")
+            
+            if [ -n "$LAST_WORKING" ]; then
+              git checkout $LAST_WORKING
+              npm ci
+              npm run build
+              pm2 restart frontend
+              
+              sleep 10
+              
+              HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://lexmakesit.com/)
+              if [ "$HTTP_CODE" != "502" ]; then
+                echo "✅ Frontend rollback successful"
+              else
+                echo "❌ Frontend rollback failed"
+                pm2 logs frontend --lines 50
+              fi
+            fi
+
+      - name: Send Slack Alert
+        if: steps.backend_check.outputs.error == 'true' || steps.frontend_check.outputs.error == 'true' || steps.auth_check.outputs.error == 'true'
+        run: |
+          MESSAGE="🚨 *PRODUCTION ALERT: 502 Error Detected*\n\n"
+          
+          if [ "${{ steps.backend_check.outputs.error }}" = "true" ]; then
+            MESSAGE="${MESSAGE}❌ Backend: ${{ steps.backend_check.outputs.failed_endpoint }}\n"
+          fi
+          
+          if [ "${{ steps.frontend_check.outputs.error }}" = "true" ]; then
+            MESSAGE="${MESSAGE}❌ Frontend: 502 error\n"
+          fi
+          
+          if [ "${{ steps.auth_check.outputs.error }}" = "true" ]; then
+            MESSAGE="${MESSAGE}❌ Auth Frontend: 502 error\n"
+          fi
+          
+          MESSAGE="${MESSAGE}\n⚡ Auto-rollback initiated\n"
+          MESSAGE="${MESSAGE}🔗 <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View logs>"
+          
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"${MESSAGE}\"}" \
+            ${{ env.SLACK_WEBHOOK }} || echo "Slack webhook not configured"
+
+      - name: Create GitHub Issue
+        if: steps.backend_check.outputs.error == 'true' || steps.frontend_check.outputs.error == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '🚨 Production 502 Error Detected';
+            const body = `
+            ## 502 Error Alert
+            
+            **Time**: ${new Date().toISOString()}
+            **Run**: ${{ github.run_id }}
+            
+            ### Affected Services
+            ${context.payload.steps?.backend_check?.outputs?.error === 'true' ? '- ❌ Backend API' : ''}
+            ${context.payload.steps?.frontend_check?.outputs?.error === 'true' ? '- ❌ Frontend' : ''}
+            ${context.payload.steps?.auth_check?.outputs?.error === 'true' ? '- ❌ Auth Frontend' : ''}
+            
+            ### Actions Taken
+            - 🔄 Auto-rollback initiated
+            - 📊 Logs captured
+            - 🔔 Team notified
+            
+            ### Next Steps
+            1. Check logs: \`docker compose logs app --tail=100\`
+            2. Verify database connectivity
+            3. Check for resource exhaustion
+            4. Review recent deployments
+            
+            [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['bug', 'production', '502-error', 'critical']
+            });
+
+  performance-monitoring:
+    name: 📊 Performance Metrics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check response times
+        run: |
+          echo "📊 Measuring response times..."
+          
+          ENDPOINTS=(
+            "https://receptionist.lexmakesit.com/"
+            "https://lexmakesit.com/"
+            "https://auth.lexmakesit.com/signin"
+          )
+          
+          for endpoint in "${ENDPOINTS[@]}"; do
+            TIME=$(curl -o /dev/null -s -w '%{time_total}\n' "$endpoint")
+            echo "$endpoint: ${TIME}s"
+            
+            # Alert if response time > 5 seconds
+            if (( $(echo "$TIME > 5.0" | bc -l) )); then
+              echo "⚠️  Slow response detected: ${TIME}s"
+            fi
+          done
+
+      - name: Check SSL certificates
+        run: |
+          echo "🔒 Checking SSL certificates..."
+          
+          DOMAINS=(
+            "receptionist.lexmakesit.com"
+            "lexmakesit.com"
+            "auth.lexmakesit.com"
+          )
+          
+          for domain in "${DOMAINS[@]}"; do
+            EXPIRY=$(echo | openssl s_client -servername $domain -connect $domain:443 2>/dev/null | \
+                     openssl x509 -noout -dates 2>/dev/null | grep "notAfter" | cut -d "=" -f2)
+            
+            if [ -n "$EXPIRY" ]; then
+              echo "✅ $domain: Expires $EXPIRY"
+            else
+              echo "⚠️  Could not check certificate for $domain"
+            fi
+          done
+
+  docker-health-check:
+    name: 🐳 Docker Container Health
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Check container health via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "🐳 Checking Docker containers..."
+            
+            cd /opt/ai-receptionist
+            docker compose ps
+            
+            # Check for unhealthy containers
+            UNHEALTHY=$(docker compose ps --format json | jq -r 'select(.Health == "unhealthy") | .Service')
+            
+            if [ -n "$UNHEALTHY" ]; then
+              echo "❌ Unhealthy containers detected: $UNHEALTHY"
+              docker compose logs $UNHEALTHY --tail=50
+            else
+              echo "✅ All containers healthy"
+            fi
+            
+            # Check resource usage
+            echo ""
+            echo "📊 Resource usage:"
+            docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"

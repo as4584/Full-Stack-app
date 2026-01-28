@@ -1,0 +1,224 @@
+name: 🚨 502 Error Prevention - Pre-Push Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feature/**, security/**]
+
+jobs:
+  # Fast pre-check before running full CI
+  quick-validation:
+    name: ⚡ Quick Validation (< 2min)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for common 502 causes
+        run: |
+          echo "🔍 Scanning for common 502 error causes..."
+          
+          # Check 1: Missing environment variables in Docker configs
+          echo "1️⃣  Checking Docker configurations..."
+          MISSING_ENV=0
+          
+          if grep -r "NEXT_PUBLIC_API_URL" frontend/ auth-frontend/ | grep -v "node_modules" | grep -q "\${.*}"; then
+            echo "⚠️  Found unset environment variable patterns"
+            MISSING_ENV=1
+          fi
+          
+          # Check 2: Port conflicts in docker-compose
+          echo "2️⃣  Checking for port conflicts..."
+          if find . -name "docker-compose*.yml" -exec grep -H "ports:" {} \; | sort | uniq -c | grep -v "^ *1 "; then
+            echo "⚠️  Potential port conflicts detected"
+          fi
+          
+          # Check 3: Missing dependencies
+          echo "3️⃣  Checking package.json files..."
+          for pkg in frontend/package.json auth-frontend/package.json; do
+            if [ -f "$pkg" ]; then
+              if ! node -e "const pkg = require('./$pkg'); if (!pkg.dependencies && !pkg.devDependencies) process.exit(1);"; then
+                echo "⚠️  Suspicious package.json: $pkg"
+              fi
+            fi
+          done
+          
+          # Check 4: FastAPI startup issues
+          echo "4️⃣  Checking FastAPI configuration..."
+          if grep -r "uvicorn" backend/ --include="*.py" --include="*.sh" | grep -v "#" | grep -q "host=0.0.0.0"; then
+            echo "✅ FastAPI configured to bind to all interfaces"
+          else
+            echo "⚠️  FastAPI may not be accessible from Docker"
+          fi
+          
+          echo "✅ Quick validation complete"
+
+  # Syntax validation
+  syntax-check:
+    name: 🔤 Syntax Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Python syntax
+        run: |
+          python -m py_compile backend/ai_receptionist/**/*.py 2>&1 | tee /tmp/py_errors.txt || true
+          if grep -q "SyntaxError" /tmp/py_errors.txt; then
+            echo "❌ Python syntax errors found!"
+            cat /tmp/py_errors.txt
+            exit 1
+          fi
+          echo "✅ Python syntax valid"
+
+      - name: Check JavaScript/TypeScript syntax
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Validate TypeScript files
+        run: |
+          for dir in frontend auth-frontend; do
+            if [ -f "$dir/tsconfig.json" ]; then
+              cd $dir
+              npm ci --prefer-offline --no-audit
+              npx tsc --noEmit --pretty false 2>&1 | tee /tmp/ts_errors_$dir.txt || true
+              cd ..
+            fi
+          done
+          
+          if grep -q "error TS" /tmp/ts_errors_*.txt 2>/dev/null; then
+            echo "❌ TypeScript errors found!"
+            cat /tmp/ts_errors_*.txt
+            exit 1
+          fi
+          echo "✅ TypeScript syntax valid"
+
+  # Docker validation
+  docker-validation:
+    name: 🐳 Docker Configuration Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Dockerfiles
+        run: |
+          echo "🔍 Validating Dockerfiles..."
+          
+          DOCKERFILES=$(find . -name "Dockerfile*" -not -path "*/node_modules/*")
+          
+          for dockerfile in $DOCKERFILES; do
+            echo "Checking $dockerfile..."
+            
+            # Check for EXPOSE directive
+            if ! grep -q "^EXPOSE" "$dockerfile"; then
+              echo "⚠️  $dockerfile missing EXPOSE directive"
+            fi
+            
+            # Check for CMD or ENTRYPOINT
+            if ! grep -qE "^(CMD|ENTRYPOINT)" "$dockerfile"; then
+              echo "⚠️  $dockerfile missing CMD or ENTRYPOINT"
+            fi
+            
+            echo "✅ $dockerfile validated"
+          done
+
+      - name: Validate docker-compose files
+        run: |
+          echo "🔍 Validating docker-compose files..."
+          
+          for compose_file in $(find . -name "docker-compose*.yml" -not -path "*/node_modules/*"); do
+            echo "Checking $compose_file..."
+            
+            # Check for healthcheck in critical services
+            if grep -q "image: postgres" "$compose_file"; then
+              if ! grep -A 10 "image: postgres" "$compose_file" | grep -q "healthcheck:"; then
+                echo "⚠️  PostgreSQL service missing healthcheck in $compose_file"
+              fi
+            fi
+            
+            # Check for restart policies
+            if ! grep -q "restart:" "$compose_file"; then
+              echo "⚠️  No restart policy found in $compose_file"
+            fi
+            
+            echo "✅ $compose_file validated"
+          done
+
+  # Network connectivity test
+  network-test:
+    name: 🌐 Network Connectivity Simulation
+    runs-on: ubuntu-latest
+    services:
+      # Simulate production network
+      nginx:
+        image: nginx:alpine
+        ports:
+          - 8080:80
+
+    steps:
+      - name: Test basic connectivity
+        run: |
+          echo "🔍 Testing network connectivity patterns..."
+          
+          # Test localhost
+          if curl -s -o /dev/null -w "%{http_code}" http://localhost:8080 | grep -q "200"; then
+            echo "✅ Localhost connectivity works"
+          fi
+          
+          # Test with timeout
+          if timeout 5s curl -s http://localhost:8080 > /dev/null; then
+            echo "✅ Response within timeout"
+          else
+            echo "❌ Request timed out"
+            exit 1
+          fi
+
+  # Environment variable validation
+  env-validation:
+    name: 🔐 Environment Variable Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for missing env vars
+        run: |
+          echo "🔍 Checking for required environment variables..."
+          
+          # Check backend .env.example
+          if [ -f "backend/.env.example" ]; then
+            REQUIRED_VARS=$(grep -v "^#" backend/.env.example | grep "=" | cut -d "=" -f1)
+            echo "Required backend vars: $REQUIRED_VARS"
+          fi
+          
+          # Check for hardcoded secrets
+          if grep -r "sk_live_" . --include="*.py" --include="*.js" --include="*.ts" --include="*.env" 2>/dev/null | grep -v ".env.example" | grep -v "node_modules"; then
+            echo "❌ CRITICAL: Hardcoded Stripe keys found!"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded secrets detected"
+
+  # Summary check
+  pre-push-summary:
+    name: ✅ Pre-Push Summary
+    runs-on: ubuntu-latest
+    needs: [quick-validation, syntax-check, docker-validation, network-test, env-validation]
+    steps:
+      - name: All checks passed
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎉 All 502 prevention checks passed!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "✅ Quick validation"
+          echo "✅ Syntax check"
+          echo "✅ Docker validation"
+          echo "✅ Network test"
+          echo "✅ Environment validation"
+          echo ""
+          echo "🚀 Safe to merge to main"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

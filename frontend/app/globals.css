@@ -2,17 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Frutiger Aero Variables */
 :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 10, 16, 32;
+    --aero-aqua: #00d1ff;
+    --aero-sky: #66c7ff;
+    --aero-ocean: #003b87;
+    --aero-white: #ffffff;
+    --aero-glass: rgba(255, 255, 255, 0.15);
 }
 
 body {
     color: rgb(var(--foreground-rgb));
-    background: linear-gradient(to bottom,
-            transparent,
-            rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+    background: transparent;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Glass effect for cards/panels */
+.glass-panel {
+    background: var(--aero-glass);
+    backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 }

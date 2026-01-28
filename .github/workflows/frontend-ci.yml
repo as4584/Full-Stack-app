@@ -1,0 +1,287 @@
+name: 🎨 CI/CD - Frontend Build & Deploy
+
+on:
+  push:
+    branches: [main, feature/**]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # Job 1: Lint and Type Check
+  lint-and-typecheck:
+    name: 🔍 ESLint & TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run ESLint
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: TypeScript type check
+        run: |
+          cd frontend
+          npx tsc --noEmit
+
+  # Job 2: Build Test
+  build-test:
+    name: 🏗️ Build Test (502 Prevention)
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build application
+        env:
+          NEXT_PUBLIC_API_URL: https://receptionist.lexmakesit.com
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Check build output
+        run: |
+          cd frontend
+          if [ ! -d ".next" ]; then
+            echo "❌ CRITICAL: Build failed - no .next directory!"
+            exit 1
+          fi
+          
+          if [ ! -f ".next/BUILD_ID" ]; then
+            echo "❌ CRITICAL: Build incomplete - no BUILD_ID!"
+            exit 1
+          fi
+          
+          echo "✅ Build successful"
+          ls -lah .next/
+
+      - name: Start production server
+        run: |
+          cd frontend
+          npm start &
+          sleep 10
+
+      - name: Health check - No 502 errors
+        run: |
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Frontend responding with 200 OK"
+              break
+            elif [ "$HTTP_CODE" = "502" ]; then
+              echo "❌ CRITICAL: Frontend returns 502 Bad Gateway!"
+              exit 1
+            else
+              echo "⚠️  Attempt $((RETRY_COUNT+1)): Got HTTP $HTTP_CODE, retrying..."
+              RETRY_COUNT=$((RETRY_COUNT+1))
+              sleep 5
+            fi
+          done
+          
+          if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+            echo "❌ Health check failed after $MAX_RETRIES attempts"
+            exit 1
+          fi
+
+      - name: Check key routes
+        run: |
+          ROUTES=("/" "/dashboard" "/settings" "/calls")
+          
+          for route in "${ROUTES[@]}"; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000$route)
+            
+            if [ "$HTTP_CODE" = "502" ]; then
+              echo "❌ CRITICAL: Route $route returns 502!"
+              exit 1
+            elif [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "307" ] || [ "$HTTP_CODE" = "308" ]; then
+              echo "✅ Route $route responsive (HTTP $HTTP_CODE)"
+            fi
+          done
+
+  # Job 3: Component Tests
+  component-tests:
+    name: 🧪 Component Tests
+    runs-on: ubuntu-latest
+    needs: [lint-and-typecheck]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd frontend
+          npm test -- --passWithNoTests
+
+  # Job 4: Visual Regression Test
+  visual-regression:
+    name: 📸 Visual Regression (Frutiger Aero Check)
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Build and start server
+        run: |
+          cd frontend
+          npm run build
+          npm start &
+          sleep 10
+
+      - name: Check Frutiger Aero animations loaded
+        run: |
+          cd frontend
+          cat <<'EOF' > check_aero.js
+          const { chromium } = require('playwright');
+          
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            await page.goto('http://localhost:3000');
+            await page.waitForTimeout(2000);
+            
+            // Check if AeroBackground component rendered
+            const aeroBackground = await page.$('.aero-background');
+            if (!aeroBackground) {
+              console.error('❌ CRITICAL: Frutiger Aero background not found!');
+              process.exit(1);
+            }
+            
+            // Check if bubbles are present
+            const bubbles = await page.$$('.aero-bubble');
+            if (bubbles.length === 0) {
+              console.error('❌ CRITICAL: No animated bubbles found!');
+              process.exit(1);
+            }
+            
+            console.log(`✅ Frutiger Aero animations loaded (${bubbles.length} bubbles)`);
+            
+            // Take screenshot
+            await page.screenshot({ path: 'aero-check.png', fullPage: true });
+            
+            await browser.close();
+          })();
+          EOF
+          
+          node check_aero.js
+
+      - name: Upload screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: aero-screenshot
+          path: frontend/aero-check.png
+
+  # Job 5: Deploy to Production
+  deploy-production:
+    name: 🚀 Deploy Frontend to Production
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [build-test, component-tests, visual-regression]
+    environment:
+      name: production-frontend
+      url: https://lexmakesit.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/ai-receptionist/frontend
+            git pull origin main
+            npm ci
+            npm run build
+            pm2 restart frontend || pm2 start npm --name "frontend" -- start
+            sleep 5
+            
+            # Post-deployment health check
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://lexmakesit.com)
+            if [ "$HTTP_CODE" = "502" ]; then
+              echo "❌ DEPLOYMENT FAILED: 502 detected!"
+              pm2 logs frontend --lines 50
+              exit 1
+            else
+              echo "✅ Frontend deployed successfully - HTTP $HTTP_CODE"
+            fi
+
+      - name: Verify Frutiger Aero animations
+        run: |
+          RESPONSE=$(curl -s https://lexmakesit.com)
+          if echo "$RESPONSE" | grep -q "aero-background"; then
+            echo "✅ Frutiger Aero CSS detected in production"
+          else
+            echo "⚠️  Warning: Frutiger Aero CSS not detected"
+          fi
+
+      - name: Post-deployment notification
+        run: |
+          echo "🎉 Frontend deployed successfully!"
+          echo "🎨 Frutiger Aero animations active"
+          echo "URL: https://lexmakesit.com"

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './aero-background.css';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
     title: 'Login - AI Receptionist',
@@ -24,7 +26,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body>{children}</body>
+            <body>
+                {children}
+                <Script src="/aero-background.js" strategy="beforeInteractive" />
+            </body>
         </html>
     );
 }
