@@ -297,11 +297,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: |
-          cd auth-frontend
-          docker build -f Dockerfile.prod -t auth-frontend:latest .
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -309,10 +304,15 @@ jobs:
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/ai-receptionist/auth-frontend
+            cd /opt/ai-receptionist
             git pull origin main
+            
+            # Deploy auth frontend using Docker
+            cd auth-frontend
             docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml up -d
+            
             sleep 10
             
             # Post-deployment health check

@@ -1,0 +1,30 @@
+# API Backend
+api.lexmakesit.com {
+    log {
+        output file /var/log/caddy/api_access.log
+    }
+    reverse_proxy 127.0.0.1:8002
+}
+
+receptionist.lexmakesit.com {
+    log {
+        output file /var/log/caddy/receptionist_access.log
+    }
+    reverse_proxy 127.0.0.1:8002
+}
+
+# Dashboard Frontend
+lexmakesit.com {
+    log {
+        output file /var/log/caddy/dashboard_access.log
+    }
+    reverse_proxy 127.0.0.1:3000
+}
+
+# Auth Frontend
+auth.lexmakesit.com {
+    log {
+        output file /var/log/caddy/auth_access.log
+    }
+    reverse_proxy 127.0.0.1:3001
+}

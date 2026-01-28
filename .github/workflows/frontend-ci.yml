@@ -254,18 +254,22 @@ jobs:
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/ai-receptionist/frontend
+            cd /opt/ai-receptionist
             git pull origin main
-            npm ci
-            npm run build
-            pm2 restart frontend || pm2 start npm --name "frontend" -- start
-            sleep 5
+            
+            # Deploy dashboard using Docker
+            cd frontend
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml up -d
+            
+            sleep 10
             
             # Post-deployment health check
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://lexmakesit.com)
             if [ "$HTTP_CODE" = "502" ]; then
               echo "❌ DEPLOYMENT FAILED: 502 detected!"
-              pm2 logs frontend --lines 50
+              docker compose -f docker-compose.prod.yml logs --tail=50
               exit 1
             else
               echo "✅ Frontend deployed successfully - HTTP $HTTP_CODE"
