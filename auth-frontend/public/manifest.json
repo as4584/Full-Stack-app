@@ -1,0 +1,9 @@
+{
+  "name": "lexmakesit-auth",
+  "short_name": "Auth",
+  "description": "Login to AI Receptionist",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea"
+}

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: auth_nextjs_prod
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://api.lexmakesit.com
+      - NEXT_PUBLIC_DASHBOARD_URL=https://dashboard.lexmakesit.com
+    networks:
+      - apps_antigravity_net
+    # Port 3000 is NOT exposed publicly - only accessible via Caddy
+
+networks:
+  apps_antigravity_net:
+    external: true

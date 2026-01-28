@@ -16,12 +16,12 @@ inventory.lexmakesit.com {
 
 # --- ai receptionist backend ---
 receptionist.lexmakesit.com {
-    reverse_proxy localhost:8020
+    reverse_proxy ai_receptionist-app-1:8002
 }
 
 # --- ai receptionist admin dashboard ---
 api.lexmakesit.com {
-    reverse_proxy localhost:8020
+    reverse_proxy ai_receptionist-app-1:8002
 }
 
 # --- PRODUCTION CUSTOMER DASHBOARD (Next.js) ---
@@ -49,6 +49,34 @@ dashboard.lexmakesit.com {
     # Logging
     log {
         output file /var/log/caddy/dashboard.log
+        format json
+    }
+}
+# --- AUTH FRONTEND (Separate Next.js App) ---
+auth.lexmakesit.com {
+    reverse_proxy auth_nextjs_prod:3000 {
+        # Preserve client info
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+    }
+    
+    # Enable compression
+    encode gzip zstd
+    
+    # Security headers
+    header {
+        # Remove server header
+        -Server
+        # Add security headers
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+    
+    # Logging
+    log {
+        output file /var/log/caddy/auth.log
         format json
     }
 }
